@@ -1,0 +1,4 @@
+(executable
+ (public_name ml-paint)
+ (name main)
+ (libraries ml_paint))

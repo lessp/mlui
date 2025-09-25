@@ -1,0 +1,19 @@
+(version 0.15)
+
+(build
+ (all_platforms
+  ((action
+    (progn
+     (when %{pkg-self:dev} (run dune subst))
+     (run dune build -p %{pkg-self:name} -j %{jobs}))))))
+
+(depends
+ (all_platforms
+  (ocaml dune)))
+
+(source
+ (fetch
+  (url
+   https://github.com/let-def/grenier/releases/download/v0.15/grenier-0.15.tbz)
+  (checksum
+   sha256=dec7f84b9e93d5825f10c7dea84d5a74d7365ede45664ae63c26b5e8045c1c44)))

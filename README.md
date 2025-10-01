@@ -15,7 +15,7 @@ dune build
 Run any example, e.g.
 
 ```
-_build/default/examples/paint/main.xe
+./_build/default/examples/paint/main.exe
 ```
 
 

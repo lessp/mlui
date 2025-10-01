@@ -175,10 +175,10 @@ let view (model : Model.t) =
     ]
 
 let () =
+  let window = Ui.Window.make ~width:800 ~height:600 () in
   match
-    Ui.run ~width:800 ~height:600
-      ~handle_event:(fun _ -> None)
-      ~model:(Model.init ()) ~update ~view ()
+    Ui.run ~window ~handle_event:(fun _ -> None) ~model:(Model.init ()) ~update
+      ~view ()
   with
   | Ok () ->
       ()

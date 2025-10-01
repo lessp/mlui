@@ -5,7 +5,7 @@ type ripple = { x : float; y : float; start_time : float }
 type model = {
   ball_x : float;
   ball_y : float;
-  position_anim : (float * float) animation option;
+  position_anim : (float * float) Animation.t option;
   anim_start_time : float;
   current_time : float;
   ripples : ripple list;
@@ -24,11 +24,11 @@ let update msg model =
       match model.position_anim with
       | Some anim ->
           let elapsed = new_time -. model.anim_start_time in
-          let x, y = value_at ~time:elapsed anim in
+          let x, y = Animation.value_at ~time:elapsed anim in
 
           (* Check if animation is done *)
           let new_model =
-            if is_done ~time:elapsed ~duration:0.6 then
+            if Animation.is_done ~time:elapsed ~duration:0.6 then
               {
                 ball_x = x;
                 ball_y = y;
@@ -69,11 +69,12 @@ let update msg model =
       (* Create animation: animate over 0.6s, apply easing, tween to target position *)
       (* Create animation *)
       let anim =
-        animate ~duration:0.6 |> ease Easing.ease_out_back
-        |> tween
+        Animation.animate ~duration:0.6
+        |> Animation.ease Animation.Easing.ease_out_back
+        |> Animation.tween
              ~from:(model.ball_x, model.ball_y)
              ~to_:(float_of_int x, float_of_int y)
-             ~interpolate:Interpolate.position
+             ~interpolate:Animation.Interpolate.position
       in
       {
         model with
@@ -98,16 +99,20 @@ let view (model : model) : Msg.t Ui.node =
 
           (* Create animations for radius and opacity *)
           let radius_anim =
-            animate ~duration |> ease Easing.ease_out_quad
-            |> tween ~from:0.0 ~to_:100.0 ~interpolate:Interpolate.float
+            Animation.animate ~duration
+            |> Animation.ease Animation.Easing.ease_out_quad
+            |> Animation.tween ~from:0.0 ~to_:100.0
+                 ~interpolate:Animation.Interpolate.float
           in
           let opacity_anim =
-            animate ~duration |> ease Easing.ease_out_cubic
-            |> tween ~from:255 ~to_:0 ~interpolate:Interpolate.int
+            Animation.animate ~duration
+            |> Animation.ease Animation.Easing.ease_out_cubic
+            |> Animation.tween ~from:255 ~to_:0
+                 ~interpolate:Animation.Interpolate.int
           in
 
-          let radius = value_at ~time:elapsed radius_anim in
-          let alpha = value_at ~time:elapsed opacity_anim in
+          let radius = Animation.value_at ~time:elapsed radius_anim in
+          let alpha = Animation.value_at ~time:elapsed opacity_anim in
 
           Ui.canvas
             ~style:

@@ -196,10 +196,10 @@ let view (model : Model.t) : Msg.t Ui.node =
 (* Main function *)
 let () =
   let handle_event = function Ui.Event.Quit -> None | _ -> None in
+  let window = Ui.Window.make ~width:800 ~height:600 () in
 
   match
-    Ui.run ~width:800 ~height:600 ~handle_event ~model:(Model.init ()) ~update
-      ~view ()
+    Ui.run ~window ~handle_event ~model:(Model.init ()) ~update ~view ()
   with
   | Ok () ->
       ()

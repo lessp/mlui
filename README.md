@@ -12,6 +12,13 @@ dune pkg lock
 dune build
 ```
 
+Run any example, e.g.
+
+```
+_/build/default/examples/paint/main.xe
+```
+
+
 ### macOS
 
 ```

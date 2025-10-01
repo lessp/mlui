@@ -1,4 +1,6 @@
+(include_subdirs unqualified)
+
 (library
- (name ml_paint)
+ (name mlui)
  (wrapped false)
- (libraries tsdl tgls.tgles2 wall))
+ (libraries tsdl tgls.tgles2 wall flex))

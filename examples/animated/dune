@@ -1,0 +1,11 @@
+(executable
+ (name ball_demo)
+ (libraries mlui))
+
+(executable
+ (name particle_demo)
+ (libraries mlui))
+
+(executable
+ (name simple_loop)
+ (libraries mlui))

@@ -1,0 +1,4 @@
+(library
+ (name flex)
+ (ocamlopt_flags
+  (-inline 100 -g)))

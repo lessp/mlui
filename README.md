@@ -4,6 +4,8 @@
 
 A basic UI framework for OCaml using The Elm Architecture (TEA) pattern.
 
+![ml-paint](https://github.com/user-attachments/assets/ddac898d-a54c-4459-965c-2b0485a6c795)
+
 ## Getting started
 
 ```
@@ -13,8 +15,6 @@ dune build
 ```
 
 Run any example, e.g.
-
-![ml-paint](https://github.com/user-attachments/assets/ddac898d-a54c-4459-965c-2b0485a6c795)
 
 ```
 ./_build/default/examples/paint/main.exe

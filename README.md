@@ -14,6 +14,8 @@ dune build
 
 Run any example, e.g.
 
+![ml-paint](https://github.com/user-attachments/assets/ddac898d-a54c-4459-965c-2b0485a6c795)
+
 ```
 ./_build/default/examples/paint/main.exe
 ```

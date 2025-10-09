@@ -1,0 +1,4 @@
+(executable
+ (public_name counter_mlx)
+ (name main)
+ (libraries mlui))

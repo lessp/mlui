@@ -1,0 +1,130 @@
+open Mlui
+
+(* Example 1: Simple stateless component *)
+(* Just a function that returns JSX - no state, just props *)
+let button ~label ~on_click ~style ~children () =
+  let open Ui.Mlx in
+  <view style on_click>
+    <text style=(Ui.Style.default |> Ui.Style.with_text_color Ui.Color.white)>
+      (string label)
+    </text>
+    children
+  </view>
+
+(* Example 2: TEA-style stateful component *)
+module Counter = struct
+  (* Component has its own Model, Msg, update *)
+  type model = { count : int }
+
+  type msg = Increment | Decrement | Reset
+
+  let init count = { count }
+
+  let update msg model =
+    match msg with
+    | Increment -> { count = model.count + 1 }
+    | Decrement -> { count = model.count - 1 }
+    | Reset -> { count = 0 }
+
+  (* View function takes model and a function to lift msgs to parent *)
+  let view ~model ~on_msg ~children () =
+    let open Ui.Mlx in
+    <view style=(Ui.Style.default |> Ui.Style.with_flex_direction Ui.Row |> Ui.Style.with_align_items Ui.Center)>
+      <view
+        style=(Ui.Style.default |> Ui.Style.with_padding 15 |> Ui.Style.with_background Ui.Color.blue)
+        on_click=(fun () -> Some (on_msg Decrement))>
+        <text>(string "-")</text>
+      </view>
+
+      <text style=(Ui.Style.default |> Ui.Style.with_padding 20 |> Ui.Style.with_font_size 24.0)>
+        (string (string_of_int model.count))
+      </text>
+
+      <view
+        style=(Ui.Style.default |> Ui.Style.with_padding 15 |> Ui.Style.with_background Ui.Color.blue)
+        on_click=(fun () -> Some (on_msg Increment))>
+        <text>(string "+")</text>
+      </view>
+
+      <view
+        style=(Ui.Style.default |> Ui.Style.with_padding 15 |> Ui.Style.with_background Ui.Color.red)
+        on_click=(fun () -> Some (on_msg Reset))>
+        <text>(string "Reset")</text>
+      </view>
+
+      children
+    </view>
+end
+
+(* Main app using the components *)
+type msg =
+  | CounterMsg of Counter.msg
+  | ButtonClicked of string
+
+type model = {
+  counter: Counter.model;
+  last_button: string;
+}
+
+let init () = {
+  counter = Counter.init 0;
+  last_button = "none";
+}
+
+let update msg model =
+  match msg with
+  | CounterMsg counter_msg ->
+      { model with counter = Counter.update counter_msg model.counter }
+  | ButtonClicked name ->
+      { model with last_button = name }
+
+let view model =
+  let open Ui.Mlx in
+  <view style=(Ui.Style.default
+               |> Ui.Style.with_flex_grow 1.0
+               |> Ui.Style.with_flex_direction Ui.Column
+               |> Ui.Style.with_justify_content Ui.Center
+               |> Ui.Style.with_align_items Ui.Center
+               |> Ui.Style.with_background Ui.Color.light_gray
+               |> Ui.Style.with_padding 20)>
+
+    <text style=(Ui.Style.default |> Ui.Style.with_font_size 32.0 |> Ui.Style.with_padding 20)>
+      (string "TEA Components Example")
+    </text>
+
+    (* Using the stateless button component *)
+    <button
+      label="Click Me!"
+      style=(Ui.Style.default |> Ui.Style.with_padding 15 |> Ui.Style.with_background Ui.Color.green)
+      on_click=(fun () -> Some (ButtonClicked "green"))>
+      <view />
+    </button>
+
+    <text style=(Ui.Style.default |> Ui.Style.with_padding 10)>
+      (string (Printf.sprintf "Last button: %s" model.last_button))
+    </text>
+
+    (* Using the stateful Counter component *)
+    (* Note: on_msg lifts Counter.msg to our app's msg *)
+    <Counter.view
+      model=model.counter
+      on_msg=(fun counter_msg -> CounterMsg counter_msg)>
+      <view />
+    </Counter.view>
+
+    (* Can use multiple instances with different models *)
+    <view style=(Ui.Style.default |> Ui.Style.with_padding 20)>
+      <text>(string "Each component instance has its own state")</text>
+    </view>
+  </view>
+
+let run () =
+  let window = Ui.Window.make ~width:800 ~height:600 ~title:"Components Example" () in
+  Ui.run ~window ~model:(init ()) ~update ~view ()
+
+let () =
+  match run () with
+  | Ok () -> ()
+  | Error (`Msg msg) ->
+      Printf.eprintf "Error: %s\n" msg;
+      exit 1

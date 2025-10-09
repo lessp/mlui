@@ -1,8 +1,8 @@
-> Functional _but_ contains 50% vibes.
+> **⚠️ Experimental**: This is a learning project and research prototype. Expect rough edges, incomplete features, and API changes. Not recommended for production use.
 
 # Mlui
 
-A basic UI framework for OCaml using The Elm Architecture (TEA) pattern.
+A declarative UI framework for OCaml using The Elm Architecture (TEA) pattern, featuring flexbox layout, animations, and functional event handling.
 
 ![ml-paint](https://github.com/user-attachments/assets/ddac898d-a54c-4459-965c-2b0485a6c795)
 

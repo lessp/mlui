@@ -11,11 +11,19 @@
 
 (documentation https://url/to/documentation)
 
+(dialect
+ (name mlx)
+ (implementation
+  (extension mlx)
+  (merlin_reader mlx)
+  (preprocess
+   (run mlx-pp %{input-file}))))
+
 (package
  (name ml-paint)
  (synopsis "Ml Paint")
  (description "Ml Paint")
- (depends ocaml tsdl ocaml-lsp-server wall tgls reason stb_truetype)
+ (depends ocaml tsdl ocaml-lsp-server wall tgls reason stb_truetype mlx)
  (tags
   (ui graphics ocaml)))
 

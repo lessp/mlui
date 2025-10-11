@@ -1,3 +1,3 @@
-include Ui_types
+include Types
 
-let run = Ui_runtime.run
+let run = Runtime.run

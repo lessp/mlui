@@ -130,8 +130,8 @@ module Drawing = struct
   type t = {
     shape_data : shape_data;
     tool : Tool.t;
-    foreground : Ui.Color.t;
-    background : Ui.Color.t;
+    foreground : Color.t;
+    background : Color.t;
   }
 
   let make ~start ~eend ~tool ~foreground ~background =

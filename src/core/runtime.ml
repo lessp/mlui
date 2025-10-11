@@ -1,10 +1,10 @@
 open Tsdl
-open Ui_types
+open Types
 
 let ( let* ) result f =
   match result with Ok x -> f x | Error (`Msg _ as err) -> Error err
 
-module Renderer = Ui_renderer.Renderer
+module Renderer = Renderer.Renderer
 
 module Engine = struct
   let mouse_button_of_sdl = function
@@ -100,7 +100,7 @@ module Engine = struct
 
     let dispatch_to_node event node_info =
       match
-        Ui_events.handle_node_event_with_bounds event node_info.node
+        Events.handle_node_event_with_bounds event node_info.node
           node_info.bounds
       with
       | Some msg ->
@@ -139,7 +139,7 @@ module Engine = struct
       let current_width, current_height = Sdl.get_window_size window in
       let scene = view !model in
       let tree_with_bounds, render_primitives =
-        Ui_layout.layout_with_bounds_and_primitives ~width:current_width
+        Layout.layout_with_bounds_and_primitives ~width:current_width
           ~height:current_height scene
       in
       node_tree := Some tree_with_bounds;
@@ -163,7 +163,7 @@ module Engine = struct
       end;
       (match !hovered_path with
       | Some path ->
-          if Option.is_none (Ui_events.find_node_by_path path tree_with_bounds)
+          if Option.is_none (Events.find_node_by_path path tree_with_bounds)
           then
             hovered_path := None
       | None ->
@@ -332,13 +332,13 @@ module Engine = struct
                 | Some tree, Ui_event.MouseDown { x; y; _ }
                 | Some tree, Ui_event.MouseUp { x; y; _ } -> (
                     let pos = Position.make ~x ~y in
-                    match Ui_events.find_node_at_position pos tree with
+                    match Events.find_node_at_position pos tree with
                     | Some node_info ->
                         dispatch_to_node ev node_info
                     | None ->
                         false)
                 | Some tree, (Ui_event.MouseMove _ as move) ->
-                    Ui_events.handle_mouse_motion ~tree ~hovered_path
+                    Events.handle_mouse_motion ~tree ~hovered_path
                       ~dispatch_to_node move
                 | _ ->
                     false

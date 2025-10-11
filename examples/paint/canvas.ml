@@ -2,8 +2,8 @@ open Mlui
 
 type paint_context = {
   tool : Common.Tool.t;
-  foreground : Ui.Color.t;
-  background : Ui.Color.t;
+  foreground : Color.t;
+  background : Color.t;
 }
 
 module Msg = struct
@@ -12,8 +12,8 @@ module Msg = struct
         x : int;
         y : int;
         tool : Common.Tool.t;
-        foreground : Ui.Color.t;
-        background : Ui.Color.t;
+        foreground : Color.t;
+        background : Color.t;
       }
     | OnMouseMove of int * int
     | OnMouseUp of int * int
@@ -112,7 +112,7 @@ let update (msg : Msg.t) (model : Model.t) : Model.t * OutMsg.t option =
           (model, None))
 
 module Styles = struct
-  open Ui
+  open Mlui
 
   let canvas =
     Style.default

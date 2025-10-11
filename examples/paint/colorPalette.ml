@@ -2,13 +2,13 @@ open Mlui
 
 module Msg = struct
   type t =
-    | SetForegroundColor of Ui.Color.t
-    | SetBackgroundColor of Ui.Color.t
+    | SetForegroundColor of Color.t
+    | SetBackgroundColor of Color.t
     | SwapColors
 end
 
 module Styles = struct
-  open Ui
+  open Mlui
 
   let container =
     Style.default
@@ -24,7 +24,7 @@ module Styles = struct
 end
 
 let all_colors =
-  Ui.Color.
+  Color.
     [
       (* top row *)
       [ black; dark_gray; magenta; green; cyan ];
@@ -38,21 +38,21 @@ let view ~foreground ~background =
       (* Current selected colors *)
       Ui.view
         ~style:
-          Ui.Style.(
+          Style.(
             default
-            |> with_background Ui.Color.light_gray
+            |> with_background Color.light_gray
             |> with_flex_direction Row |> with_padding 5)
         [
           Ui.view
             ~style:
-              Ui.Style.(
+              Style.(
                 default |> with_background foreground
                 |> with_size ~width:40 ~height:40)
             ~on_click:(fun () -> Some Msg.SwapColors)
             [];
           Ui.view
             ~style:
-              Ui.Style.(
+              Style.(
                 default |> with_background background
                 |> with_size ~width:40 ~height:40)
             ~on_click:(fun () -> Some Msg.SwapColors)
@@ -61,16 +61,16 @@ let view ~foreground ~background =
       (* Color palette *)
       Ui.view
         ~style:
-          Ui.Style.(default |> with_flex_direction Column |> with_padding 5)
+          Style.(default |> with_flex_direction Column |> with_padding 5)
         (all_colors
         |> List.map @@ fun row ->
            Ui.view
-             ~style:Ui.(Style.default |> Style.with_flex_direction Row)
+             ~style:(Style.default |> Style.with_flex_direction Row)
              (row
              |> List.map @@ fun color ->
                 Ui.view
                   ~style:
-                    Ui.Style.(
+                    Style.(
                       default |> with_background color
                       |> with_size ~width:25 ~height:25)
                   ~on_click:(fun () -> Some (Msg.SetForegroundColor color))

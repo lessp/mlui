@@ -1,7 +1,7 @@
 open Mlui
 
 module Styles = struct
-  open Ui
+  open Mlui
 
   let root =
     Style.default
@@ -30,7 +30,7 @@ let render_box label style color =
   Ui.view ~style:(style color)
     [
       Ui.text
-        ~style:(Ui.Style.default |> Ui.Style.with_text_color Ui.Color.white)
+        ~style:(Style.default |> Style.with_text_color Color.white)
         label;
     ]
 
@@ -39,19 +39,19 @@ let view (_ : unit) : unit Ui.node =
     [
       Ui.view ~style:Styles.row
         [
-          render_box "Row A" Styles.box Ui.Color.blue;
-          render_box "Row B" Styles.box Ui.Color.green;
+          render_box "Row A" Styles.box Color.blue;
+          render_box "Row B" Styles.box Color.green;
         ];
       Ui.view ~style:Styles.column
         [
-          render_box "Column A" Styles.box Ui.Color.red;
-          render_box "Column B" Styles.box Ui.Color.yellow;
+          render_box "Column A" Styles.box Color.red;
+          render_box "Column B" Styles.box Color.yellow;
         ];
     ]
 
 let run () =
-  let window = Ui.Window.make ~width:1024 ~height:768 ~title:"Flex Demo" () in
-  Ui.run ~window ~init:() ~update:(fun _ model -> model) ~view ()
+  let window = Window.make ~width:1024 ~height:768 ~title:"Flex Demo" () in
+  Mlui.run ~window ~init:() ~update:(fun _ model -> (model, Cmd.none)) ~view ()
 
 let () =
   match run () with

@@ -6,7 +6,7 @@ module Msg = struct
     | ContinueDrawing of int * int
     | StopDrawing
     | Clear
-    | ChangeColor of Ui.Color.t
+    | ChangeColor of Color.t
     | ChangeSize of [ `Small | `Medium | `Large ]
 end
 
@@ -15,8 +15,8 @@ module Model = struct
 
   type t = {
     state : drawing_state;
-    paths : (Ui.Color.t * float * (int * int) list) list;
-    current_color : Ui.Color.t;
+    paths : (Color.t * float * (int * int) list) list;
+    current_color : Color.t;
     current_size : float;
   }
 
@@ -24,7 +24,7 @@ module Model = struct
     {
       state = Idle;
       paths = [];
-      current_color = Ui.Color.black;
+      current_color = Color.black;
       current_size = 2.0;
     }
 end
@@ -32,73 +32,73 @@ end
 let update msg model =
   match msg with
   | Msg.StartDrawing (x, y) ->
-      { model with Model.state = Drawing [ (x, y) ] }
+      ({ model with Model.state = Drawing [ (x, y) ] }, Cmd.none)
   | Msg.ContinueDrawing (x, y) -> (
       match model.state with
       | Drawing points ->
-          { model with state = Drawing ((x, y) :: points) }
+          ({ model with state = Drawing ((x, y) :: points) }, Cmd.none)
       | Idle ->
-          model)
+          (model, Cmd.none))
   | Msg.StopDrawing -> (
       match model.state with
       | Drawing points when List.length points > 1 ->
           let path =
             (model.current_color, model.current_size, List.rev points)
           in
-          { model with state = Idle; paths = path :: model.paths }
+          ({ model with state = Idle; paths = path :: model.paths }, Cmd.none)
       | _ ->
-          { model with state = Idle })
+          ({ model with state = Idle }, Cmd.none))
   | Msg.Clear ->
-      { model with paths = []; state = Idle }
+      ({ model with paths = []; state = Idle }, Cmd.none)
   | Msg.ChangeColor color ->
-      { model with current_color = color }
+      ({ model with current_color = color }, Cmd.none)
   | Msg.ChangeSize size ->
       let size_value =
         match size with `Small -> 1.0 | `Medium -> 3.0 | `Large -> 5.0
       in
-      { model with current_size = size_value }
+      ({ model with current_size = size_value }, Cmd.none)
 
 module Styles = struct
   let app =
-    Ui.Style.default
-    |> Ui.Style.with_size ~width:800 ~height:600
-    |> Ui.Style.with_flex_direction Column
-    |> Ui.Style.with_background Ui.Color.light_gray
+    Style.default
+    |> Style.with_size ~width:800 ~height:600
+    |> Style.with_flex_direction Column
+    |> Style.with_background Color.light_gray
 
   let toolbar =
-    Ui.Style.default
-    |> Ui.Style.with_flex_direction Row
-    |> Ui.Style.with_padding 10
-    |> Ui.Style.with_background Ui.Color.gray
+    Style.default
+    |> Style.with_flex_direction Row
+    |> Style.with_padding 10
+    |> Style.with_background Color.gray
 
   let canvas =
-    Ui.Style.default
-    |> Ui.Style.with_flex_grow 1.0
-    |> Ui.Style.with_background Ui.Color.white
+    Style.default
+    |> Style.with_flex_grow 1.0
+    |> Style.with_background Color.white
 
   let primary_button =
-    Ui.Style.default
-    |> Ui.Style.with_size ~width:80 ~height:30
-    |> Ui.Style.with_background Ui.Color.blue
-    |> Ui.Style.with_justify_content Center
-    |> Ui.Style.with_align_items Center
+    Style.default
+    |> Style.with_size ~width:80 ~height:30
+    |> Style.with_background Color.blue
+    |> Style.with_justify_content Center
+    |> Style.with_align_items Center
 
   let color_option color =
-    Ui.Style.default
-    |> Ui.Style.with_size ~width:30 ~height:30
-    |> Ui.Style.with_background color
+    Style.default
+    |> Style.with_size ~width:30 ~height:30
+    |> Style.with_background color
 
   let size_button =
-    Ui.Style.default
-    |> Ui.Style.with_size ~width:50 ~height:30
-    |> Ui.Style.with_background Ui.Color.dark_gray
-    |> Ui.Style.with_justify_content Center
-    |> Ui.Style.with_align_items Center
+    Style.default
+    |> Style.with_size ~width:50 ~height:30
+    |> Style.with_background Color.dark_gray
+    |> Style.with_justify_content Center
+    |> Style.with_align_items Center
 
   let button_text =
-    Ui.Style.default
-    |> Ui.Style.with_text_color Ui.Color.white
-    |> Ui.Style.with_font_size 14.0
+    Style.default
+    |> Style.with_text_color Color.white
+    |> Style.with_font_size 14.0
 end
 
 let view (model : Model.t) : Msg.t Ui.node =
@@ -144,13 +144,13 @@ let view (model : Model.t) : Msg.t Ui.node =
 
   let colors =
     [
-      Ui.Color.black;
-      Ui.Color.red;
-      Ui.Color.make ~r:0 ~g:255 ~b:0 ();
-      Ui.Color.blue;
-      Ui.Color.yellow;
-      Ui.Color.magenta;
-      Ui.Color.cyan;
+      Color.black;
+      Color.red;
+      Color.make ~r:0 ~g:255 ~b:0 ();
+      Color.blue;
+      Color.yellow;
+      Color.magenta;
+      Color.cyan;
     ]
   in
 
@@ -195,7 +195,7 @@ let view (model : Model.t) : Msg.t Ui.node =
 
 (* Main function *)
 let () =
-  let window = Ui.Window.make ~width:800 ~height:600 () in
+  let window = Window.make ~width:800 ~height:600 () in
 
   match
     Ui.run ~window ~init:(Model.init ()) ~update ~view ()

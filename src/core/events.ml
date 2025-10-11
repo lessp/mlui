@@ -1,4 +1,4 @@
-open Ui_types
+open Types
 
 let point_in_bounds (pos : Position.t) (bounds : bounds) : bool =
   let x = float_of_int pos.x in

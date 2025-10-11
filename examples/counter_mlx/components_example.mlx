@@ -5,7 +5,7 @@ open Mlui
 let button ~label ~on_click ~style ~children () =
   let open Ui.Mlx in
   <view style on_click>
-    <text style=(Ui.Style.default |> Ui.Style.with_text_color Ui.Color.white)>
+    <text style=(Style.default |> Style.with_text_color Color.white)>
       (string label)
     </text>
     children
@@ -29,25 +29,25 @@ module Counter = struct
   (* View function takes model and a function to lift msgs to parent *)
   let view ~model ~on_msg ~children () =
     let open Ui.Mlx in
-    <view style=(Ui.Style.default |> Ui.Style.with_flex_direction Ui.Row |> Ui.Style.with_align_items Ui.Center)>
+    <view style=(Style.default |> Style.with_flex_direction Ui.Row |> Style.with_align_items Ui.Center)>
       <view
-        style=(Ui.Style.default |> Ui.Style.with_padding 15 |> Ui.Style.with_background Ui.Color.blue)
+        style=(Style.default |> Style.with_padding 15 |> Style.with_background Color.blue)
         on_click=(fun () -> Some (on_msg Decrement))>
         <text>(string "-")</text>
       </view>
 
-      <text style=(Ui.Style.default |> Ui.Style.with_padding 20 |> Ui.Style.with_font_size 24.0)>
+      <text style=(Style.default |> Style.with_padding 20 |> Style.with_font_size 24.0)>
         (string (string_of_int model.count))
       </text>
 
       <view
-        style=(Ui.Style.default |> Ui.Style.with_padding 15 |> Ui.Style.with_background Ui.Color.blue)
+        style=(Style.default |> Style.with_padding 15 |> Style.with_background Color.blue)
         on_click=(fun () -> Some (on_msg Increment))>
         <text>(string "+")</text>
       </view>
 
       <view
-        style=(Ui.Style.default |> Ui.Style.with_padding 15 |> Ui.Style.with_background Ui.Color.red)
+        style=(Style.default |> Style.with_padding 15 |> Style.with_background Color.red)
         on_click=(fun () -> Some (on_msg Reset))>
         <text>(string "Reset")</text>
       </view>
@@ -80,27 +80,27 @@ let update msg model =
 
 let view model =
   let open Ui.Mlx in
-  <view style=(Ui.Style.default
-               |> Ui.Style.with_flex_grow 1.0
-               |> Ui.Style.with_flex_direction Ui.Column
-               |> Ui.Style.with_justify_content Ui.Center
-               |> Ui.Style.with_align_items Ui.Center
-               |> Ui.Style.with_background Ui.Color.light_gray
-               |> Ui.Style.with_padding 20)>
+  <view style=(Style.default
+               |> Style.with_flex_grow 1.0
+               |> Style.with_flex_direction Ui.Column
+               |> Style.with_justify_content Ui.Center
+               |> Style.with_align_items Ui.Center
+               |> Style.with_background Color.light_gray
+               |> Style.with_padding 20)>
 
-    <text style=(Ui.Style.default |> Ui.Style.with_font_size 32.0 |> Ui.Style.with_padding 20)>
+    <text style=(Style.default |> Style.with_font_size 32.0 |> Style.with_padding 20)>
       (string "TEA Components Example")
     </text>
 
     (* Using the stateless button component *)
     <button
       label="Click Me!"
-      style=(Ui.Style.default |> Ui.Style.with_padding 15 |> Ui.Style.with_background Ui.Color.green)
+      style=(Style.default |> Style.with_padding 15 |> Style.with_background Color.green)
       on_click=(fun () -> Some (ButtonClicked "green"))>
       <view />
     </button>
 
-    <text style=(Ui.Style.default |> Ui.Style.with_padding 10)>
+    <text style=(Style.default |> Style.with_padding 10)>
       (string (Printf.sprintf "Last button: %s" model.last_button))
     </text>
 
@@ -113,13 +113,13 @@ let view model =
     </Counter.view>
 
     (* Can use multiple instances with different models *)
-    <view style=(Ui.Style.default |> Ui.Style.with_padding 20)>
+    <view style=(Style.default |> Style.with_padding 20)>
       <text>(string "Each component instance has its own state")</text>
     </view>
   </view>
 
 let run () =
-  let window = Ui.Window.make ~width:800 ~height:600 ~title:"Components Example" () in
+  let window = Window.make ~width:800 ~height:600 ~title:"Components Example" () in
   Ui.run ~window ~model:(init ()) ~update ~view ()
 
 let () =

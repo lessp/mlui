@@ -7,18 +7,18 @@ module Msg = struct
     | Increment
     | Decrement
     | Reset
-    | SetColor of Ui.Color.t
+    | SetColor of Color.t
     | SetHover of button option
 end
 
 module Model = struct
-  type t = { counter : int; bg_color : Ui.Color.t; hovered : button option }
+  type t = { counter : int; bg_color : Color.t; hovered : button option }
 
-  let init () = { counter = 0; bg_color = Ui.Color.gray; hovered = None }
+  let init () = { counter = 0; bg_color = Color.gray; hovered = None }
 end
 
-let lighten_color (color : Ui.Color.t) delta : Ui.Color.t =
-  let open Ui.Color in
+let lighten_color (color : Color.t) delta : Color.t =
+  let open Color in
   let clamp v = max 0 (min 255 v) in
   let { r; g; b; a } = color in
   { r = clamp (r + delta); g = clamp (g + delta); b = clamp (b + delta); a }
@@ -26,18 +26,18 @@ let lighten_color (color : Ui.Color.t) delta : Ui.Color.t =
 let update msg (model : Model.t) =
   match msg with
   | Msg.Increment ->
-      ({ model with Model.counter = model.counter + 1 }, Ui.Cmd.none)
+      ({ model with Model.counter = model.counter + 1 }, Cmd.none)
   | Msg.Decrement ->
-      ({ model with Model.counter = model.counter - 1 }, Ui.Cmd.none)
+      ({ model with Model.counter = model.counter - 1 }, Cmd.none)
   | Msg.Reset ->
-      ({ model with Model.counter = 0 }, Ui.Cmd.none)
+      ({ model with Model.counter = 0 }, Cmd.none)
   | Msg.SetColor color ->
-      ({ model with Model.bg_color = color }, Ui.Cmd.none)
+      ({ model with Model.bg_color = color }, Cmd.none)
   | Msg.SetHover hovered ->
-      ({ model with Model.hovered }, Ui.Cmd.none)
+      ({ model with Model.hovered }, Cmd.none)
 
 module Styles = struct
-  open Ui
+  open Mlui
 
   let container background =
     Style.default |> Style.with_flex_grow 1.0
@@ -89,56 +89,56 @@ let view (model : Model.t) : Msg.t Ui.node =
           Ui.view
             ~style:
               (Styles.button ~hovered:(hovered Decrement)
-                 (Ui.Color.make ~r:100 ~g:100 ~b:255 ()))
+                 (Color.make ~r:100 ~g:100 ~b:255 ()))
             ~on_click:(fun () -> Some Msg.Decrement)
             ~on_mouse_enter:(fun _ -> Some (Msg.SetHover (Some Decrement)))
             ~on_mouse_leave:(fun _ -> Some (Msg.SetHover None))
             [
               Ui.text
                 ~style:
-                  (Ui.Style.default
-                  |> Ui.Style.with_text_color
-                       (Ui.Color.make ~r:255 ~g:255 ~b:255 ())
-                  |> Ui.Style.with_font_size 24.0)
+                  (Style.default
+                  |> Style.with_text_color
+                       (Color.make ~r:255 ~g:255 ~b:255 ())
+                  |> Style.with_font_size 24.0)
                 " - ";
             ];
           Ui.view ~style:Styles.spacer [];
           Ui.view
             ~style:
               (Styles.button ~hovered:(hovered Increment)
-                 (Ui.Color.make ~r:100 ~g:100 ~b:255 ()))
+                 (Color.make ~r:100 ~g:100 ~b:255 ()))
             ~on_click:(fun () -> Some Msg.Increment)
             ~on_mouse_enter:(fun _ -> Some (Msg.SetHover (Some Increment)))
             ~on_mouse_leave:(fun _ -> Some (Msg.SetHover None))
             [
               Ui.text
                 ~style:
-                  (Ui.Style.default
-                  |> Ui.Style.with_text_color
-                       (Ui.Color.make ~r:255 ~g:255 ~b:255 ())
-                  |> Ui.Style.with_font_size 24.0)
+                  (Style.default
+                  |> Style.with_text_color
+                       (Color.make ~r:255 ~g:255 ~b:255 ())
+                  |> Style.with_font_size 24.0)
                 " + ";
             ];
           Ui.view ~style:Styles.spacer [];
           Ui.view
             ~style:
               (Styles.button ~hovered:(hovered Reset)
-                 (Ui.Color.make ~r:200 ~g:100 ~b:100 ()))
+                 (Color.make ~r:200 ~g:100 ~b:100 ()))
             ~on_click:(fun () -> Some Msg.Reset)
             ~on_mouse_enter:(fun _ -> Some (Msg.SetHover (Some Reset)))
             ~on_mouse_leave:(fun _ -> Some (Msg.SetHover None))
             [
               Ui.text
                 ~style:
-                  (Ui.Style.default
-                  |> Ui.Style.with_text_color
-                       (Ui.Color.make ~r:255 ~g:255 ~b:255 ())
-                  |> Ui.Style.with_font_size 18.0)
+                  (Style.default
+                  |> Style.with_text_color
+                       (Color.make ~r:255 ~g:255 ~b:255 ())
+                  |> Style.with_font_size 18.0)
                 "Reset";
             ];
         ];
       Ui.view ~style:Styles.palette_row
-        ([ Ui.Color.green; Ui.Color.yellow; Ui.Color.magenta; Ui.Color.blue ]
+        ([ Color.green; Color.yellow; Color.magenta; Color.blue ]
         |> List.map (fun color ->
                Ui.view
                  ~style:(Styles.palette_option color)
@@ -150,7 +150,7 @@ let subscriptions _model =
   Sub.on_quit Msg.Reset
 
 let run () =
-  let window = Ui.Window.make ~width:800 ~height:600 ~title:"Counter" () in
+  let window = Window.make ~width:800 ~height:600 ~title:"Counter" () in
   Ui.run ~window ~subscriptions ~init:(Model.init ()) ~update ~view ()
 
 let () =

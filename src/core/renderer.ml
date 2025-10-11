@@ -1,4 +1,4 @@
-open Ui_types
+open Types
 
 module Renderer = struct
   let load_font name =
@@ -137,7 +137,7 @@ module Renderer = struct
                  ~y:(float_of_int text_y) ~halign:`CENTER ~valign:`MIDDLE text))
 
   let render_node ~x ~y node =
-    Ui_layout.layout_node_impl ~x ~y node
+    Layout.layout_node_impl ~x ~y node
     |> List.map render_primitive_node
     |> Wall.Image.seq
 

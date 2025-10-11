@@ -10,8 +10,8 @@ end
 module Model = struct
   type t = {
     selected_tool : Common.Tool.t;
-    foreground : Ui.Color.t;
-    background : Ui.Color.t;
+    foreground : Color.t;
+    background : Color.t;
     canvas_model : Canvas.Model.t;
     drawings : Common.Drawing.t list;
   }
@@ -19,8 +19,8 @@ module Model = struct
   let init () =
     {
       selected_tool = Common.Tool.default ();
-      foreground = Ui.Color.black;
-      background = Ui.Color.white;
+      foreground = Color.black;
+      background = Color.white;
       canvas_model = Canvas.Model.init ();
       drawings = [];
     }
@@ -29,19 +29,19 @@ end
 let update (msg : Msg.t) (model : Model.t) =
   match msg with
   | SetTool tool ->
-      { model with selected_tool = tool }
+      ({ model with selected_tool = tool }, Cmd.none)
   | ColorPaletteMsg msg -> (
       match msg with
       | ColorPalette.Msg.SetForegroundColor color ->
-          { model with foreground = color }
+          ({ model with foreground = color }, Cmd.none)
       | ColorPalette.Msg.SetBackgroundColor color ->
-          { model with background = color }
+          ({ model with background = color }, Cmd.none)
       | ColorPalette.Msg.SwapColors ->
-          {
+          ({
             model with
             foreground = model.background;
             background = model.foreground;
-          })
+          }, Cmd.none))
   | CanvasMsg msg -> (
       let updated_canvas, out_msg = Canvas.update msg model.canvas_model in
       let model' = { model with canvas_model = updated_canvas } in
@@ -51,18 +51,18 @@ let update (msg : Msg.t) (model : Model.t) =
             Common.Drawing.make ~start ~eend ~tool:model.selected_tool
               ~foreground:model.foreground ~background:model.background
           in
-          { model' with drawings = new_drawing :: model'.drawings }
+          ({ model' with drawings = new_drawing :: model'.drawings }, Cmd.none)
       | Some (Canvas.OutMsg.PathCommitted points) ->
           let new_drawing =
             Common.Drawing.make_path ~points ~tool:model.selected_tool
               ~foreground:model.foreground ~background:model.background
           in
-          { model' with drawings = new_drawing :: model'.drawings }
+          ({ model' with drawings = new_drawing :: model'.drawings }, Cmd.none)
       | None ->
-          model')
+          (model', Cmd.none))
 
 module Styles = struct
-  open Ui
+  open Mlui
 
   let container =
     Style.default
@@ -112,7 +112,7 @@ let view_tool tool (model : Model.t) =
     ~on_click:(fun () -> Some (Msg.SetTool tool))
     [
       Ui.text
-        ~style:(Ui.Style.default |> Ui.Style.with_text_color Ui.Color.white)
+        ~style:(Style.default |> Style.with_text_color Color.white)
         (Common.Tool.to_family_string tool);
     ]
 
@@ -122,7 +122,7 @@ let view_subtool tool (model : Model.t) =
     ~on_click:(fun () -> Some (Msg.SetTool tool))
     [
       Ui.text
-        ~style:(Ui.Style.default |> Ui.Style.with_text_color Ui.Color.white)
+        ~style:(Style.default |> Style.with_text_color Color.white)
         (Common.Tool.to_string tool);
     ]
 
@@ -130,13 +130,13 @@ let group_in_pairs items =
   let rec loop = function
     | a :: b :: rest ->
         Ui.view
-          ~style:(Ui.Style.default |> Ui.Style.with_flex_direction Row)
+          ~style:(Style.default |> Style.with_flex_direction Row)
           [ a; b ]
         :: loop rest
     | [ a ] ->
         [
           Ui.view
-            ~style:(Ui.Style.default |> Ui.Style.with_flex_direction Row)
+            ~style:(Style.default |> Style.with_flex_direction Row)
             [ a ];
         ]
     | [] ->
@@ -150,7 +150,7 @@ let view (model : Model.t) =
       Ui.view ~style:Styles.toolbar_and_canvas
         [
           Ui.view
-            ~style:(Ui.Style.default |> Ui.Style.with_flex_direction Column)
+            ~style:(Style.default |> Style.with_flex_direction Column)
             [
               Common.Tool.all_family_defaults
               |> List.map (fun tool -> view_tool tool model)
@@ -164,7 +164,7 @@ let view (model : Model.t) =
               | None ->
                   Ui.empty);
             ];
-          Canvas.view ~init:model.canvas_model ~tool:model.selected_tool
+          Canvas.view ~model:model.canvas_model ~tool:model.selected_tool
             ~foreground:model.foreground ~background:model.background
             ~drawings:model.drawings
           |> Ui.map_msg (fun msg -> Msg.CanvasMsg msg);
@@ -175,7 +175,7 @@ let view (model : Model.t) =
     ]
 
 let () =
-  let window = Ui.Window.make ~width:800 ~height:600 () in
+  let window = Window.make ~width:800 ~height:600 () in
   match
     Ui.run ~window
       ~init:(Model.init ()) ~update ~view ()

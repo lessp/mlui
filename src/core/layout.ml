@@ -1,4 +1,4 @@
-open Ui_types
+open Types
 
 (* Reference flex types from Style module *)
 open Style

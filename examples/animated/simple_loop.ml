@@ -16,25 +16,25 @@ let position_animation =
        ~interpolate:Animation.Interpolate.float
 
 let update (Msg.Tick delta) model =
-  ({ current_time = model.current_time +. delta }, Ui.Cmd.none)
+  ({ current_time = model.current_time +. delta }, Cmd.none)
 
 let view model =
   let x = Animation.value_at ~time:model.current_time position_animation in
 
   Ui.view
     ~style:
-      (Ui.Style.default
-      |> Ui.Style.with_background (Ui.Color.make ~r:240 ~g:240 ~b:245 ())
-      |> Ui.Style.with_flex_grow 1.0)
+      (Style.default
+      |> Style.with_background (Color.make ~r:240 ~g:240 ~b:245 ())
+      |> Style.with_flex_grow 1.0)
     [
       Ui.view
         ~style:
-          (Ui.Style.default
-          |> Ui.Style.with_position_type Ui.Absolute
-          |> Ui.Style.with_size ~width:60 ~height:60
-          |> Ui.Style.with_background (Ui.Color.make ~r:70 ~g:130 ~b:250 ())
-          |> Ui.Style.with_border_radius 8.0
-          |> Ui.Style.with_transform (Ui.Translate { x; y = 100.0 }))
+          (Style.default
+          |> Style.with_position_type Style.Absolute
+          |> Style.with_size ~width:60 ~height:60
+          |> Style.with_background (Color.make ~r:70 ~g:130 ~b:250 ())
+          |> Style.with_border_radius 8.0
+          |> Style.with_transform (Style.Translate { x; y = 100.0 }))
         [];
     ]
 
@@ -43,7 +43,7 @@ let subscriptions _model =
 
 let run () =
   let window =
-    Ui.Window.make ~width:600 ~height:400 ~title:"Simple Loop Animation" ()
+    Window.make ~width:600 ~height:400 ~title:"Simple Loop Animation" ()
   in
   Ui.run ~window ~subscriptions ~init:{ current_time = 0.0 } ~update ~view ()
 

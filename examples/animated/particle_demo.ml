@@ -68,7 +68,7 @@ let hsl_to_rgb h s l =
   let r = int_of_float ((r1 +. m) *. 255.0) in
   let g = int_of_float ((g1 +. m) *. 255.0) in
   let b = int_of_float ((b1 +. m) *. 255.0) in
-  Ui.Color.make ~r ~g ~b ()
+  Color.make ~r ~g ~b ()
 
 (* Spawn burst of particles at position *)
 let spawn_particles x y current_time =
@@ -111,27 +111,27 @@ let update msg model =
           model.particles
       in
 
-      { model with particles = updated_particles; current_time = new_time }
+      ({ model with particles = updated_particles; current_time = new_time }, Cmd.none)
   | Msg.Click (x, y) ->
       let new_particles = spawn_particles x y model.current_time in
-      {
+      ({
         model with
         particles = model.particles @ new_particles;
         click_count = model.click_count + 1;
-      }
+      }, Cmd.none)
 
 let view (model : model) : Msg.t Ui.node =
   let opacity_anim, size_anim = make_particle_animations () in
 
   Ui.view
     ~style:
-      (Ui.Style.default
-      |> Ui.Style.with_background (Ui.Color.make ~r:20 ~g:20 ~b:30 ())
-      |> Ui.Style.with_flex_grow 1.0
-      |> Ui.Style.with_flex_direction Column)
+      (Style.default
+      |> Style.with_background (Color.make ~r:20 ~g:20 ~b:30 ())
+      |> Style.with_flex_grow 1.0
+      |> Style.with_flex_direction Column)
     [
       (* Render all particles *)
-      Ui.canvas ~style:Ui.Style.default
+      Ui.canvas ~style:Style.default
         (List.map
            (fun p ->
              let elapsed = model.current_time -. p.spawn_time in
@@ -143,7 +143,7 @@ let view (model : model) : Msg.t Ui.node =
              (* Create colorful particle with HSL *)
              let color = hsl_to_rgb p.hue 0.8 0.6 in
              let color_with_alpha =
-               Ui.Color.make ~r:color.r ~g:color.g ~b:color.b ~a:alpha ()
+               Color.make ~r:color.r ~g:color.g ~b:color.b ~a:alpha ()
              in
 
              (* Draw as small circle *)
@@ -163,7 +163,7 @@ let run () =
   let initial_model = { particles = []; current_time = 0.0; click_count = 0 } in
 
   let window =
-    Ui.Window.make ~width:1024 ~height:768 ~title:"Particle Explosion Demo" ()
+    Window.make ~width:1024 ~height:768 ~title:"Particle Explosion Demo" ()
   in
   Ui.run ~window ~subscriptions ~init:initial_model ~update ~view ()
 

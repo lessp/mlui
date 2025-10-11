@@ -42,6 +42,9 @@ let canvas = Ui.canvas
 let empty = Ui.empty
 let map_msg = Ui.map_msg
 
+(* Operator for map_msg - lifting messages *)
+let ( <^> ) node f = map_msg f node
+
 (* Re-export primitive constructors *)
 let rectangle = Ui.rectangle
 let ellipse = Ui.ellipse

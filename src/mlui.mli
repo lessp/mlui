@@ -104,6 +104,20 @@ val fill_and_stroke : Color.t -> Color.t -> float -> primitive_style
 
 val map_msg : ('a -> 'b) -> 'a node -> 'b node
 
+(** {2 Operators} *)
+
+val ( <^> ) : 'a node -> ('a -> 'b) -> 'b node
+(** [node <^> f] is shorthand for [map_msg f node].
+
+    Example:
+    {[
+      SubComponent.view model.sub_model
+      <^> (fun msg -> Msg.SubMsg msg)
+            (* instead of: *)
+            SubComponent.view model.sub_model
+      |> map_msg (fun msg -> Msg.SubMsg msg)
+    ]} *)
+
 (** {1 Application Runtime} *)
 
 val run :

@@ -22,7 +22,7 @@ let update msg model =
 
       (* Remove expired ripples (older than 0.8 seconds) *)
       let active_ripples =
-        List.filter (fun r -> new_time -. r.start_time < 0.8) model.ripples
+        model.ripples |> List.filter @@ fun r -> new_time -. r.start_time < 0.8
       in
       ( {
           ball_position = new_ball_position;
@@ -65,47 +65,46 @@ let view (model : model) : Msg.t Mlui.node =
         |> with_background (Color.make ~r:240 ~g:240 ~b:245 ())
         |> with_flex_grow 1.0)
     ([ (* Render ripples *) ]
-    @ List.map
-        (fun ripple ->
-          let elapsed = model.current_time -. ripple.start_time in
-          let duration = 0.8 in
+    @ (model.ripples
+       |> List.map (fun ripple ->
+              let elapsed = model.current_time -. ripple.start_time in
+              let duration = 0.8 in
 
-          (* Create animations for radius and opacity *)
-          let radius_anim =
-            Animation.animate ~duration
-            |> Animation.ease Animation.Easing.ease_out_quad
-            |> Animation.tween ~from:0.0 ~to_:100.0
-                 ~interpolate:Animation.Interpolate.float
-          in
-          let opacity_anim =
-            Animation.animate ~duration
-            |> Animation.ease Animation.Easing.ease_out_cubic
-            |> Animation.tween ~from:255 ~to_:0
-                 ~interpolate:Animation.Interpolate.int
-          in
+              (* Create animations for radius and opacity *)
+              let radius_anim =
+                Animation.animate ~duration
+                |> Animation.ease Animation.Easing.ease_out_quad
+                |> Animation.tween ~from:0.0 ~to_:100.0
+                     ~interpolate:Animation.Interpolate.float
+              in
+              let opacity_anim =
+                Animation.animate ~duration
+                |> Animation.ease Animation.Easing.ease_out_cubic
+                |> Animation.tween ~from:255 ~to_:0
+                     ~interpolate:Animation.Interpolate.int
+              in
 
-          let radius = Animation.value_at ~time:elapsed radius_anim in
-          let alpha = Animation.value_at ~time:elapsed opacity_anim in
+              let radius = Animation.value_at ~time:elapsed radius_anim in
+              let alpha = Animation.value_at ~time:elapsed opacity_anim in
 
-          (* Ripple using view node with circular border *)
-          view
-            ~style:
-              Style.(
-                default
-                |> with_position_type Absolute
-                |> with_size
-                     ~width:(int_of_float (radius *. 2.0))
-                     ~height:(int_of_float (radius *. 2.0))
-                |> with_transform
-                     (Translate
-                        { x = ripple.x -. radius; y = ripple.y -. radius })
-                |> with_background (Color.make ~r:0 ~g:0 ~b:0 ~a:0 ())
-                |> with_border_radius radius
-                |> with_border
-                     ~color:(Color.make ~r:255 ~g:02 ~b:147 ~a:alpha ())
-                     ~width:3.0)
-            [])
-        model.ripples
+              (* Ripple using view node with circular border *)
+              view
+                ~style:
+                  Style.(
+                    default
+                    |> with_position_type Absolute
+                    |> with_size
+                         ~width:(int_of_float (radius *. 2.0))
+                         ~height:(int_of_float (radius *. 2.0))
+                    |> with_transform
+                         (Translate
+                            { x = ripple.x -. radius; y = ripple.y -. radius })
+                    |> with_background (Color.make ~r:0 ~g:0 ~b:0 ~a:0 ())
+                    |> with_border_radius radius
+                    |> with_border
+                         ~color:(Color.make ~r:255 ~g:02 ~b:147 ~a:alpha ())
+                         ~width:3.0)
+                []))
     @ [
         (* The animated ball using position: absolute + transform *)
         view

@@ -33,7 +33,9 @@ let update (msg : Msg.t) (model : Model.t) : Model.t * Cmd.t =
 module Styles = struct
   let wrapper =
     Style.(
-      default |> with_flex_grow 1.0 |> with_align_items Center
+      default
+      |> with_background Color.white
+      |> with_flex_grow 1.0 |> with_align_items Center
       |> with_justify_content Center)
 
   let ball =
@@ -41,7 +43,8 @@ module Styles = struct
       default
       |> with_position_type Absolute
       |> with_size ~width:100 ~height:100
-      |> with_border_radius 100.0 |> with_background Color.red)
+      |> with_border_radius 49.9
+      |> with_background Color.black)
 end
 
 let view (model : Model.t) : Msg.t node =

@@ -8,11 +8,11 @@ let update (Tick delta) model =
   ({ current_time = model.current_time +. delta }, Cmd.none)
 
 let horizontal_slide_animation =
-  Animation.animate ~duration:2.0
-  |> Animation.ease Animation.Easing.ease_in_out_cubic
-  |> Animation.repeat ~mode:Animation.Alternate ~duration:2.0
-  |> Animation.tween ~from:(-200.0) ~to_:200.0
-       ~interpolate:Animation.Interpolate.float
+  Animation.(
+    animate ~duration:2.0
+    |> ease Easing.ease_in_out_cubic
+    |> repeat ~mode:Alternate ~duration:2.0
+    |> tween ~from:(-200.0) ~to_:200.0 ~interpolate:Interpolate.float)
 
 let view model =
   view
@@ -30,7 +30,7 @@ let view model =
             default
             |> with_size ~width:60 ~height:60
             |> with_background Color.black
-            |> with_border_radius 8.0
+            |> with_border_radius 16.0
             |> with_transform
                  (TranslateX
                     (Animation.value_at ~time:model.current_time

@@ -74,19 +74,19 @@ module Styles = struct
     Style.default |> Style.with_padding 20 |> Style.with_background color
 end
 
-let view (model : Model.t) : Msg.t Ui.node =
+let view (model : Model.t) : Msg.t Mlui.node =
   let hovered button =
     match model.hovered with Some btn when btn = button -> true | _ -> false
   in
 
-  Ui.view
+  view
     ~style:(Styles.container model.bg_color)
     [
-      Ui.text ~style:Styles.counter_text
+      text ~style:Styles.counter_text
         (Printf.sprintf "Count: %d" model.counter);
-      Ui.view ~style:Styles.button_row
+      view ~style:Styles.button_row
         [
-          Ui.view
+          view
             ~style:
               (Styles.button ~hovered:(hovered Decrement)
                  (Color.make ~r:100 ~g:100 ~b:255 ()))
@@ -94,7 +94,7 @@ let view (model : Model.t) : Msg.t Ui.node =
             ~on_mouse_enter:(fun _ -> Some (Msg.SetHover (Some Decrement)))
             ~on_mouse_leave:(fun _ -> Some (Msg.SetHover None))
             [
-              Ui.text
+              text
                 ~style:
                   (Style.default
                   |> Style.with_text_color
@@ -102,8 +102,8 @@ let view (model : Model.t) : Msg.t Ui.node =
                   |> Style.with_font_size 24.0)
                 " - ";
             ];
-          Ui.view ~style:Styles.spacer [];
-          Ui.view
+          view ~style:Styles.spacer [];
+          view
             ~style:
               (Styles.button ~hovered:(hovered Increment)
                  (Color.make ~r:100 ~g:100 ~b:255 ()))
@@ -111,7 +111,7 @@ let view (model : Model.t) : Msg.t Ui.node =
             ~on_mouse_enter:(fun _ -> Some (Msg.SetHover (Some Increment)))
             ~on_mouse_leave:(fun _ -> Some (Msg.SetHover None))
             [
-              Ui.text
+              text
                 ~style:
                   (Style.default
                   |> Style.with_text_color
@@ -119,8 +119,8 @@ let view (model : Model.t) : Msg.t Ui.node =
                   |> Style.with_font_size 24.0)
                 " + ";
             ];
-          Ui.view ~style:Styles.spacer [];
-          Ui.view
+          view ~style:Styles.spacer [];
+          view
             ~style:
               (Styles.button ~hovered:(hovered Reset)
                  (Color.make ~r:200 ~g:100 ~b:100 ()))
@@ -128,7 +128,7 @@ let view (model : Model.t) : Msg.t Ui.node =
             ~on_mouse_enter:(fun _ -> Some (Msg.SetHover (Some Reset)))
             ~on_mouse_leave:(fun _ -> Some (Msg.SetHover None))
             [
-              Ui.text
+              text
                 ~style:
                   (Style.default
                   |> Style.with_text_color
@@ -137,10 +137,10 @@ let view (model : Model.t) : Msg.t Ui.node =
                 "Reset";
             ];
         ];
-      Ui.view ~style:Styles.palette_row
+      view ~style:Styles.palette_row
         ([ Color.green; Color.yellow; Color.magenta; Color.blue ]
         |> List.map (fun color ->
-               Ui.view
+               view
                  ~style:(Styles.palette_option color)
                  ~on_click:(fun () -> Some (Msg.SetColor color))
                  []));
@@ -151,7 +151,7 @@ let subscriptions _model =
 
 let run () =
   let window = Window.make ~width:800 ~height:600 ~title:"Counter" () in
-  Ui.run ~window ~subscriptions ~init:(Model.init ()) ~update ~view ()
+  Mlui.run ~window ~subscriptions ~init:(Model.init ()) ~update ~view ()
 
 let () =
   match run () with

@@ -21,13 +21,13 @@ let update (Msg.Tick delta) model =
 let view model =
   let x = Animation.value_at ~time:model.current_time position_animation in
 
-  Ui.view
+  view
     ~style:
       (Style.default
       |> Style.with_background (Color.make ~r:240 ~g:240 ~b:245 ())
       |> Style.with_flex_grow 1.0)
     [
-      Ui.view
+      view
         ~style:
           (Style.default
           |> Style.with_position_type Style.Absolute
@@ -45,7 +45,7 @@ let run () =
   let window =
     Window.make ~width:600 ~height:400 ~title:"Simple Loop Animation" ()
   in
-  Ui.run ~window ~subscriptions ~init:{ current_time = 0.0 } ~update ~view ()
+  Mlui.run ~window ~subscriptions ~init:{ current_time = 0.0 } ~update ~view ()
 
 let () =
   match run () with

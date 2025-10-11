@@ -101,7 +101,7 @@ module Styles = struct
     |> Style.with_font_size 14.0
 end
 
-let view (model : Model.t) : Msg.t Ui.node =
+let view (model : Model.t) : Msg.t Mlui.node =
   (* Create canvas primitives from paths *)
   let path_to_primitive (color, width, points) =
     match points with
@@ -111,7 +111,7 @@ let view (model : Model.t) : Msg.t Ui.node =
         let float_points =
           List.map (fun (x, y) -> (float_of_int x, float_of_int y)) points
         in
-        Some (Ui.path ~points:float_points ~style:(Ui.stroke color width))
+        Some (path ~points:float_points ~style:(stroke color width))
   in
 
   (* Add current drawing path if drawing *)
@@ -137,9 +137,9 @@ let view (model : Model.t) : Msg.t Ui.node =
 
   (* Create toolbar *)
   let clear_button =
-    Ui.view ~style:Styles.primary_button
+    view ~style:Styles.primary_button
       ~on_click:(fun () -> Some Msg.Clear)
-      [ Ui.text ~style:Styles.button_text "Clear" ]
+      [ text ~style:Styles.button_text "Clear" ]
   in
 
   let colors =
@@ -157,7 +157,7 @@ let view (model : Model.t) : Msg.t Ui.node =
   let color_buttons =
     colors
     |> List.map (fun color ->
-           Ui.view
+           view
              ~style:(Styles.color_option color)
              ~on_click:(fun () -> Some (Msg.ChangeColor color))
              [])
@@ -166,19 +166,19 @@ let view (model : Model.t) : Msg.t Ui.node =
   let size_buttons =
     [ (`Small, "S"); (`Medium, "M"); (`Large, "L") ]
     |> List.map (fun (size, label) ->
-           Ui.view ~style:Styles.size_button
+           view ~style:Styles.size_button
              ~on_click:(fun () -> Some (Msg.ChangeSize size))
-             [ Ui.text ~style:Styles.button_text label ])
+             [ text ~style:Styles.button_text label ])
   in
 
   let toolbar =
-    Ui.view ~style:Styles.toolbar
+    view ~style:Styles.toolbar
       ([ clear_button ] @ color_buttons @ size_buttons)
   in
 
   (* Create canvas with event handlers *)
   let canvas =
-    Ui.canvas ~style:Styles.canvas
+    canvas ~style:Styles.canvas
       ~on_mouse_down:(fun (x, y) -> Some (Msg.StartDrawing (x, y)))
       ~on_mouse_move:(fun (x, y) ->
         match model.state with
@@ -191,14 +191,14 @@ let view (model : Model.t) : Msg.t Ui.node =
   in
 
   (* Main app layout *)
-  Ui.view ~style:Styles.app [ toolbar; canvas ]
+  view ~style:Styles.app [ toolbar; canvas ]
 
 (* Main function *)
 let () =
   let window = Window.make ~width:800 ~height:600 () in
 
   match
-    Ui.run ~window ~init:(Model.init ()) ~update ~view ()
+    Mlui.run ~window ~init:(Model.init ()) ~update ~view ()
   with
   | Ok () ->
       ()

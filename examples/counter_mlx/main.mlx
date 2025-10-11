@@ -87,8 +87,8 @@ end
 
 (* See components_example.mlx for examples of custom TEA-style components *)
 
-let view (model : Model.t) : Msg.t Ui.node =
-  let open Ui.Mlx in
+let view (model : Model.t) : Msg.t Mlui.node =
+  let open Mlui.Mlx in
   let hovered button =
     match model.hovered with Some btn when btn = button -> true | _ -> false
   in

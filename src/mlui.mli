@@ -15,6 +15,32 @@ module Cocoa = Cocoa_hello
 
 type 'msg node = 'msg Ui.node
 
+(** {2 Primitive Types} *)
+
+type primitive_style =
+  | Fill of Color.t
+  | Stroke of Color.t * float
+  | FillAndStroke of Color.t * Color.t * float
+
+type primitive =
+  | Rectangle of {
+      x : float;
+      y : float;
+      width : float;
+      height : float;
+      style : primitive_style;
+    }
+  | Ellipse of {
+      cx : float;
+      cy : float;
+      rx : float;
+      ry : float;
+      style : primitive_style;
+    }
+  | Path of { points : (float * float) list; style : primitive_style }
+
+(** {2 UI Construction} *)
+
 val view :
   ?style:Style.t ->
   ?key:string ->
@@ -34,7 +60,93 @@ val text :
   string ->
   'msg node
 
+val canvas :
+  ?style:Style.t ->
+  ?key:string ->
+  ?on_click:(unit -> 'msg option) ->
+  ?on_mouse_down:(int * int -> 'msg option) ->
+  ?on_mouse_up:(int * int -> 'msg option) ->
+  ?on_mouse_move:(int * int -> 'msg option) ->
+  ?on_mouse_enter:(int * int -> 'msg option) ->
+  ?on_mouse_leave:(int * int -> 'msg option) ->
+  primitive list ->
+  'msg node
+
+val empty : 'msg node
+
+(** {2 Primitive Constructors} *)
+
+val rectangle :
+  x:float ->
+  y:float ->
+  width:float ->
+  height:float ->
+  style:primitive_style ->
+  primitive
+
+val ellipse :
+  cx:float ->
+  cy:float ->
+  rx:float ->
+  ry:float ->
+  style:primitive_style ->
+  primitive
+
+val path : points:(float * float) list -> style:primitive_style -> primitive
+
+(** {2 Primitive Styles} *)
+
+val fill : Color.t -> primitive_style
+val stroke : Color.t -> float -> primitive_style
+val fill_and_stroke : Color.t -> Color.t -> float -> primitive_style
+
+(** {2 Utilities} *)
+
 val map_msg : ('a -> 'b) -> 'a node -> 'b node
+
+(** {1 MLX/JSX Support} *)
+
+module Mlx : sig
+  val string : string -> 'msg node
+  val list : 'msg node list -> 'msg node
+
+  val view :
+    ?style:Style.t ->
+    ?key:string ->
+    ?on_click:(unit -> 'msg option) ->
+    ?on_mouse_down:(int * int -> 'msg option) ->
+    ?on_mouse_up:(int * int -> 'msg option) ->
+    ?on_mouse_move:(int * int -> 'msg option) ->
+    ?on_mouse_enter:(int * int -> 'msg option) ->
+    ?on_mouse_leave:(int * int -> 'msg option) ->
+    children:'msg node list ->
+    unit ->
+    'msg node
+  [@@JSX]
+
+  val text :
+    ?style:Style.t ->
+    ?key:string ->
+    ?on_click:(unit -> 'msg option) ->
+    children:'msg node list ->
+    unit ->
+    'msg node
+  [@@JSX]
+
+  val canvas :
+    ?style:Style.t ->
+    ?key:string ->
+    ?on_click:(unit -> 'msg option) ->
+    ?on_mouse_down:(int * int -> 'msg option) ->
+    ?on_mouse_up:(int * int -> 'msg option) ->
+    ?on_mouse_move:(int * int -> 'msg option) ->
+    ?on_mouse_enter:(int * int -> 'msg option) ->
+    ?on_mouse_leave:(int * int -> 'msg option) ->
+    children:primitive list ->
+    unit ->
+    'msg node
+  [@@JSX]
+end
 
 (** {1 Application Runtime} *)
 

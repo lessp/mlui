@@ -3,7 +3,7 @@ open Mlui
 (* Example 1: Simple stateless component *)
 (* Just a function that returns JSX - no state, just props *)
 let button ~label ~on_click ~style ~children () =
-  let open Ui.Mlx in
+  let open Mlui.Mlx in
   <view style on_click>
     <text style=(Style.default |> Style.with_text_color Color.white)>
       (string label)
@@ -28,8 +28,8 @@ module Counter = struct
 
   (* View function takes model and a function to lift msgs to parent *)
   let view ~model ~on_msg ~children () =
-    let open Ui.Mlx in
-    <view style=(Style.default |> Style.with_flex_direction Ui.Row |> Style.with_align_items Ui.Center)>
+    let open Mlui.Mlx in
+    <view style=(Style.default |> Style.with_flex_direction Style.Row |> Style.with_align_items Style.Center)>
       <view
         style=(Style.default |> Style.with_padding 15 |> Style.with_background Color.blue)
         on_click=(fun () -> Some (on_msg Decrement))>
@@ -79,12 +79,12 @@ let update msg model =
       { model with last_button = name }
 
 let view model =
-  let open Ui.Mlx in
+  let open Mlui.Mlx in
   <view style=(Style.default
                |> Style.with_flex_grow 1.0
-               |> Style.with_flex_direction Ui.Column
-               |> Style.with_justify_content Ui.Center
-               |> Style.with_align_items Ui.Center
+               |> Style.with_flex_direction Style.Column
+               |> Style.with_justify_content Style.Center
+               |> Style.with_align_items Style.Center
                |> Style.with_background Color.light_gray
                |> Style.with_padding 20)>
 
@@ -120,7 +120,7 @@ let view model =
 
 let run () =
   let window = Window.make ~width:800 ~height:600 ~title:"Components Example" () in
-  Ui.run ~window ~model:(init ()) ~update ~view ()
+  Mlui.run ~window ~model:(init ()) ~update ~view ()
 
 let () =
   match run () with

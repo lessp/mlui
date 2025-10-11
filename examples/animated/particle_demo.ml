@@ -120,10 +120,10 @@ let update msg model =
         click_count = model.click_count + 1;
       }, Cmd.none)
 
-let view (model : model) : Msg.t Ui.node =
+let view (model : model) : Msg.t Mlui.node =
   let opacity_anim, size_anim = make_particle_animations () in
 
-  Ui.view
+  view
     ~style:
       (Style.default
       |> Style.with_background (Color.make ~r:20 ~g:20 ~b:30 ())
@@ -131,7 +131,7 @@ let view (model : model) : Msg.t Ui.node =
       |> Style.with_flex_direction Column)
     [
       (* Render all particles *)
-      Ui.canvas ~style:Style.default
+      canvas ~style:Style.default
         (List.map
            (fun p ->
              let elapsed = model.current_time -. p.spawn_time in
@@ -147,8 +147,8 @@ let view (model : model) : Msg.t Ui.node =
              in
 
              (* Draw as small circle *)
-             Ui.ellipse ~cx:p.x ~cy:p.y ~rx:size ~ry:size
-               ~style:(Ui.fill color_with_alpha))
+             ellipse ~cx:p.x ~cy:p.y ~rx:size ~ry:size
+               ~style:(fill color_with_alpha))
            model.particles);
     ]
 
@@ -165,7 +165,7 @@ let run () =
   let window =
     Window.make ~width:1024 ~height:768 ~title:"Particle Explosion Demo" ()
   in
-  Ui.run ~window ~subscriptions ~init:initial_model ~update ~view ()
+  Mlui.run ~window ~subscriptions ~init:initial_model ~update ~view ()
 
 let () =
   match run () with

@@ -83,7 +83,7 @@ let update msg model =
         ripples = new_ripple :: model.ripples;
       }, Cmd.none)
 
-let view (model : model) : Msg.t Ui.node =
+let view (model : model) : Msg.t Mlui.node =
   let ball_size = 60 in
 
   view
@@ -114,15 +114,15 @@ let view (model : model) : Msg.t Ui.node =
           let radius = Animation.value_at ~time:elapsed radius_anim in
           let alpha = Animation.value_at ~time:elapsed opacity_anim in
 
-          Ui.canvas
+          canvas
             ~style:
               Style.(default
               |> with_position_type Absolute
               |> with_transform (Translate { x = 0.0; y = 0.0 }))
             [
-              Ui.ellipse ~cx:ripple.x ~cy:ripple.y ~rx:radius ~ry:radius
+              ellipse ~cx:ripple.x ~cy:ripple.y ~rx:radius ~ry:radius
                 ~style:
-                  (Ui.stroke
+                  (stroke
                      (Color.make ~r:255 ~g:02 ~b:147 ~a:alpha ())
                      3.0);
             ])

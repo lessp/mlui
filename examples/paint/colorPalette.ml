@@ -33,24 +33,24 @@ let all_colors =
     ]
 
 let view ~foreground ~background =
-  Ui.view ~style:Styles.container
+  view ~style:Styles.container
     [
       (* Current selected colors *)
-      Ui.view
+      view
         ~style:
           Style.(
             default
             |> with_background Color.light_gray
             |> with_flex_direction Row |> with_padding 5)
         [
-          Ui.view
+          view
             ~style:
               Style.(
                 default |> with_background foreground
                 |> with_size ~width:40 ~height:40)
             ~on_click:(fun () -> Some Msg.SwapColors)
             [];
-          Ui.view
+          view
             ~style:
               Style.(
                 default |> with_background background
@@ -59,16 +59,16 @@ let view ~foreground ~background =
             [];
         ];
       (* Color palette *)
-      Ui.view
+      view
         ~style:
           Style.(default |> with_flex_direction Column |> with_padding 5)
         (all_colors
         |> List.map @@ fun row ->
-           Ui.view
+           view
              ~style:(Style.default |> Style.with_flex_direction Row)
              (row
              |> List.map @@ fun color ->
-                Ui.view
+                view
                   ~style:
                     Style.(
                       default |> with_background color

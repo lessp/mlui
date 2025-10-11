@@ -104,24 +104,24 @@ module Styles = struct
 end
 
 let view_tool tool (model : Model.t) =
-  Ui.view
+  view
     ~style:
       (Styles.toolbar_item
          ~is_selected:(Common.Tool.is_same_family model.selected_tool tool)
          ())
     ~on_click:(fun () -> Some (Msg.SetTool tool))
     [
-      Ui.text
+      text
         ~style:(Style.default |> Style.with_text_color Color.white)
         (Common.Tool.to_family_string tool);
     ]
 
 let view_subtool tool (model : Model.t) =
-  Ui.view
+  view
     ~style:(Styles.toolbar_item ~is_selected:(model.selected_tool = tool) ())
     ~on_click:(fun () -> Some (Msg.SetTool tool))
     [
-      Ui.text
+      text
         ~style:(Style.default |> Style.with_text_color Color.white)
         (Common.Tool.to_string tool);
     ]
@@ -129,13 +129,13 @@ let view_subtool tool (model : Model.t) =
 let group_in_pairs items =
   let rec loop = function
     | a :: b :: rest ->
-        Ui.view
+        view
           ~style:(Style.default |> Style.with_flex_direction Row)
           [ a; b ]
         :: loop rest
     | [ a ] ->
         [
-          Ui.view
+          view
             ~style:(Style.default |> Style.with_flex_direction Row)
             [ a ];
         ]
@@ -145,39 +145,39 @@ let group_in_pairs items =
   loop items
 
 let view (model : Model.t) =
-  Ui.view ~style:Styles.container
+  view ~style:Styles.container
     [
-      Ui.view ~style:Styles.toolbar_and_canvas
+      view ~style:Styles.toolbar_and_canvas
         [
-          Ui.view
+          view
             ~style:(Style.default |> Style.with_flex_direction Column)
             [
               Common.Tool.all_family_defaults
               |> List.map (fun tool -> view_tool tool model)
               |> group_in_pairs
-              |> Ui.view ~style:Styles.toolbar;
+              |> view ~style:Styles.toolbar;
               (match Common.Tool.get_subtools model.selected_tool with
               | Some subtools ->
                   subtools
                   |> List.map (fun tool -> view_subtool tool model)
-                  |> Ui.view ~style:Styles.toolbar
+                  |> view ~style:Styles.toolbar
               | None ->
-                  Ui.empty);
+                  empty);
             ];
           Canvas.view ~model:model.canvas_model ~tool:model.selected_tool
             ~foreground:model.foreground ~background:model.background
             ~drawings:model.drawings
-          |> Ui.map_msg (fun msg -> Msg.CanvasMsg msg);
+          |> map_msg (fun msg -> Msg.CanvasMsg msg);
         ];
       ColorPalette.view ~foreground:model.foreground
         ~background:model.background
-      |> Ui.map_msg (fun msg -> Msg.ColorPaletteMsg msg);
+      |> map_msg (fun msg -> Msg.ColorPaletteMsg msg);
     ]
 
 let () =
   let window = Window.make ~width:800 ~height:600 () in
   match
-    Ui.run ~window
+    Mlui.run ~window
       ~init:(Model.init ()) ~update ~view ()
   with
   | Ok () ->

@@ -120,7 +120,7 @@ module Styles = struct
     |> Style.with_flex_grow 1.0
 end
 
-let drawing_to_primitive (drawing : Common.Drawing.t) : Ui.primitive =
+let drawing_to_primitive (drawing : Common.Drawing.t) : primitive =
   let open Common in
   match drawing.shape_data with
   | Drawing.TwoPoint { start; eend } -> (
@@ -136,44 +136,44 @@ let drawing_to_primitive (drawing : Common.Drawing.t) : Ui.primitive =
 
       match drawing.tool with
       | Tool.Rectangle `Outline ->
-          Ui.rectangle ~x ~y ~width ~height
-            ~style:(Ui.stroke drawing.foreground 2.0)
+          rectangle ~x ~y ~width ~height
+            ~style:(stroke drawing.foreground 2.0)
       | Tool.Rectangle `Filled ->
-          Ui.rectangle ~x ~y ~width ~height ~style:(Ui.fill drawing.foreground)
+          rectangle ~x ~y ~width ~height ~style:(fill drawing.foreground)
       | Tool.Rectangle `FilledWithOutline ->
-          Ui.rectangle ~x ~y ~width ~height
+          rectangle ~x ~y ~width ~height
             ~style:
-              (Ui.fill_and_stroke drawing.background drawing.foreground 2.0)
+              (fill_and_stroke drawing.background drawing.foreground 2.0)
       | Tool.Ellipse `Outline ->
           let cx = x +. (width /. 2.0) in
           let cy = y +. (height /. 2.0) in
           let rx = width /. 2.0 in
           let ry = height /. 2.0 in
-          Ui.ellipse ~cx ~cy ~rx ~ry ~style:(Ui.stroke drawing.foreground 2.0)
+          ellipse ~cx ~cy ~rx ~ry ~style:(stroke drawing.foreground 2.0)
       | Tool.Ellipse `Filled ->
           let cx = x +. (width /. 2.0) in
           let cy = y +. (height /. 2.0) in
           let rx = width /. 2.0 in
           let ry = height /. 2.0 in
-          Ui.ellipse ~cx ~cy ~rx ~ry ~style:(Ui.fill drawing.foreground)
+          ellipse ~cx ~cy ~rx ~ry ~style:(fill drawing.foreground)
       | Tool.Ellipse `FilledWithOutline ->
           let cx = x +. (width /. 2.0) in
           let cy = y +. (height /. 2.0) in
           let rx = width /. 2.0 in
           let ry = height /. 2.0 in
-          Ui.ellipse ~cx ~cy ~rx ~ry
+          ellipse ~cx ~cy ~rx ~ry
             ~style:
-              (Ui.fill_and_stroke drawing.background drawing.foreground 2.0)
+              (fill_and_stroke drawing.background drawing.foreground 2.0)
       | Tool.Line thickness ->
           let points = [ (x1, y1); (x2, y2) ] in
           let width =
             match thickness with `S -> 1.0 | `M -> 3.0 | `L -> 6.0
           in
-          Ui.path ~points ~style:(Ui.stroke drawing.foreground width)
+          path ~points ~style:(stroke drawing.foreground width)
       | Tool.Pencil | Tool.Brush _ | Tool.Eraser _ ->
           (* These should not appear in TwoPoint, but handle gracefully *)
           let points = [ (x1, y1); (x2, y2) ] in
-          Ui.path ~points ~style:(Ui.stroke drawing.foreground 1.0))
+          path ~points ~style:(stroke drawing.foreground 1.0))
   | Drawing.Path points ->
       let float_points =
         List.map
@@ -206,7 +206,7 @@ let drawing_to_primitive (drawing : Common.Drawing.t) : Ui.primitive =
         | _ ->
             drawing.foreground
       in
-      Ui.path ~points:float_points ~style:(Ui.stroke color width)
+      path ~points:float_points ~style:(stroke color width)
 
 let view ~(model : Model.t) ~tool ~foreground ~background ~drawings =
   let all_drawings =
@@ -217,7 +217,7 @@ let view ~(model : Model.t) ~tool ~foreground ~background ~drawings =
         drawings
   in
   let primitives = all_drawings |> List.map drawing_to_primitive |> List.rev in
-  Ui.canvas ~style:Styles.canvas
+  canvas ~style:Styles.canvas
     ~on_mouse_down:(fun (x, y) ->
       Some (Msg.OnMouseDown { x; y; tool; foreground; background }))
     ~on_mouse_move:(fun (x, y) -> Some (Msg.OnMouseMove (x, y)))

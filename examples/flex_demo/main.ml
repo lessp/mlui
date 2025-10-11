@@ -27,22 +27,22 @@ module Styles = struct
 end
 
 let render_box label style color =
-  Ui.view ~style:(style color)
+  view ~style:(style color)
     [
-      Ui.text
+      text
         ~style:(Style.default |> Style.with_text_color Color.white)
         label;
     ]
 
-let view (_ : unit) : unit Ui.node =
-  Ui.view ~style:Styles.root
+let view (_ : unit) : unit Mlui.node =
+  view ~style:Styles.root
     [
-      Ui.view ~style:Styles.row
+      view ~style:Styles.row
         [
           render_box "Row A" Styles.box Color.blue;
           render_box "Row B" Styles.box Color.green;
         ];
-      Ui.view ~style:Styles.column
+      view ~style:Styles.column
         [
           render_box "Column A" Styles.box Color.red;
           render_box "Column B" Styles.box Color.yellow;

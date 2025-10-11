@@ -83,7 +83,6 @@ type 'msg node =
       on_mouse_leave : (int * int -> 'msg option) option;
     }
       -> 'msg node
-  | Fragment : { children : 'msg node list } -> 'msg node
   | Empty : 'msg node
 
 let rec map_msg f node =
@@ -177,8 +176,6 @@ let rec map_msg f node =
               (fun handler pos -> Option.map f (handler pos))
               on_mouse_leave;
         }
-  | Fragment { children } ->
-      Fragment { children = List.map (map_msg f) children }
   | Empty ->
       Empty
 
@@ -243,66 +240,3 @@ let fill_and_stroke fill_color stroke_color width =
   FillAndStroke (fill_color, stroke_color, width)
 
 type 'msg event_handler = Ui_event.t -> 'msg option
-
-(* MLX/JSX-compatible constructors *)
-module Mlx = struct
-  (* Wrapper to convert strings into text nodes for JSX *)
-  let string content =
-    Text { content; style = Style.default; key = None; on_click = None }
-
-  (* Helper to flatten a list of nodes into a single node (like React.list in Reason) *)
-  let list children = Fragment { children }
-
-  (* MLX-compatible view constructor *)
-  let view ?(style = Style.default) ?key ?on_click ?on_mouse_down ?on_mouse_up
-      ?on_mouse_move ?on_mouse_enter ?on_mouse_leave ~children () =
-    View
-      {
-        style;
-        children;
-        key;
-        on_click;
-        on_mouse_down;
-        on_mouse_up;
-        on_mouse_move;
-        on_mouse_enter;
-        on_mouse_leave;
-      }
-  [@@JSX]
-
-  (* MLX-compatible text constructor *)
-  let text ?(style = Style.default) ?key ?on_click ~children () =
-    (* Extract text content from children list - expects a single text node *)
-    let content =
-      match children with
-      | [ Text { content; _ } ] ->
-          content
-      | [] ->
-          ""
-      | _ ->
-          (* For now, concatenate any text nodes found *)
-          List.fold_left
-            (fun acc node ->
-              match node with Text { content; _ } -> acc ^ content | _ -> acc)
-            "" children
-    in
-    Text { content; style; key; on_click }
-  [@@JSX]
-
-  (* MLX-compatible canvas constructor *)
-  let canvas ?(style = Style.default) ?key ?on_click ?on_mouse_down ?on_mouse_up
-      ?on_mouse_move ?on_mouse_enter ?on_mouse_leave ~children () =
-    Canvas
-      {
-        primitives = children;
-        style;
-        key;
-        on_click;
-        on_mouse_down;
-        on_mouse_up;
-        on_mouse_move;
-        on_mouse_enter;
-        on_mouse_leave;
-      }
-  [@@JSX]
-end

@@ -148,24 +148,12 @@ module FlexIntegrationImpl = struct
     match ui_node with
     | View { style; _ } | Text { style; _ } | Canvas { style; _ } ->
         style.position_type = Some Absolute
-    | Fragment _ | Empty ->
+    | Empty ->
         false
-
-  (* Helper to recursively flatten Fragment children *)
-  let rec flatten_fragments (ui_node : 'msg interactive_node) : 'msg interactive_node list =
-    match ui_node with
-    | Fragment { children } ->
-        List.concat_map flatten_fragments children
-    | _ -> [ui_node]
 
   let rec create_flex_node (ui_node : 'msg interactive_node) : FlexTypes.node =
     match ui_node with
     | Empty ->
-        FlexLayoutSupport.createNode ~withChildren:[||]
-          ~andStyle:(style_to_flex_style Style.default)
-          ()
-    | Fragment _ ->
-        (* This should never be called directly - fragments should be flattened *)
         FlexLayoutSupport.createNode ~withChildren:[||]
           ~andStyle:(style_to_flex_style Style.default)
           ()
@@ -174,12 +162,11 @@ module FlexIntegrationImpl = struct
           ~andStyle:(style_to_flex_style style)
           ()
     | View { style; children; _ } ->
-        (* Filter out absolutely positioned children and flatten fragments *)
+        (* Filter out absolutely positioned children *)
         let relative_children =
           List.filter
             (fun child -> not (is_absolutely_positioned child))
             children
-          |> List.concat_map flatten_fragments
         in
         let flex_children =
           Array.of_list (List.map create_flex_node relative_children)
@@ -228,7 +215,7 @@ module FlexIntegrationImpl = struct
           style
       | Canvas { style; _ } ->
           style
-      | Fragment _ | Empty ->
+      | Empty ->
           Style.default
     in
 
@@ -237,9 +224,6 @@ module FlexIntegrationImpl = struct
     let abs_y = offset_y +. layout_bounds.y +. transform_y in
     match ui_node with
     | Empty ->
-        []
-    | Fragment _ ->
-        (* Fragments should have been flattened during flex tree creation *)
         []
     | Text { content; style; _ } ->
         let font_size = Option.value style.font_size ~default:12.0 in
@@ -448,7 +432,7 @@ module FlexIntegrationImpl = struct
                     style
                 | Canvas { style; _ } ->
                     style
-                | Fragment _ | Empty ->
+                | Empty ->
                     Style.default
               in
               let transform_x, transform_y =
@@ -478,9 +462,6 @@ module FlexIntegrationImpl = struct
 
     match ui_node with
     | Empty ->
-        []
-    | Fragment _ ->
-        (* Fragments should have been flattened during flex tree creation *)
         []
     | Text { content; style; _ } ->
         let font_size = Option.value style.font_size ~default:12.0 in
@@ -651,7 +632,7 @@ module FlexIntegrationImpl = struct
                     style
                 | Canvas { style; _ } ->
                     style
-                | Fragment _ | Empty ->
+                | Empty ->
                     Style.default
               in
               let transform_x, transform_y =
@@ -660,7 +641,7 @@ module FlexIntegrationImpl = struct
               apply_layout_to_ui_node_absolute
                 ~offset_x:(offset_x +. transform_x)
                 ~offset_y:(offset_y +. transform_y) child child_style)
-            (List.concat_map flatten_fragments children)
+            children
         in
         background @ child_primitives
 
@@ -686,7 +667,7 @@ module FlexIntegrationImpl = struct
           style
       | Canvas { style; _ } ->
           style
-      | Fragment _ | Empty ->
+      | Empty ->
           Style.default
     in
 
@@ -718,13 +699,11 @@ module FlexIntegrationImpl = struct
     in
     let children =
       match ui_node with
-      | Fragment { children = ui_children } | View { children = ui_children; _ }
-        ->
+      | View { children = ui_children; _ } ->
           let relative_children =
             List.filter
               (fun child -> not (is_absolutely_positioned child))
               ui_children
-            |> List.concat_map flatten_fragments
           in
           let absolute_children =
             List.filter is_absolutely_positioned ui_children
@@ -762,7 +741,7 @@ module FlexIntegrationImpl = struct
                       style
                   | Canvas { style; _ } ->
                       style
-                  | Fragment _ | Empty ->
+                  | Empty ->
                       Style.default
                 in
                 let width = Option.value child_style.width ~default:0 in

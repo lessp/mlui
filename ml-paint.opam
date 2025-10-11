@@ -18,7 +18,6 @@ depends: [
   "tgls"
   "reason"
   "stb_truetype"
-  "mlx"
   "odoc" {with-doc}
 ]
 build: [

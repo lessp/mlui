@@ -11,7 +11,7 @@ end
 (* Create animation that loops forever *)
 let position_animation =
   Animation.animate ~duration:2.0
-  |> Animation.repeat ~duration:2.0
+  |> Animation.repeat ~mode:Animation.Alternate ~duration:2.0
   |> Animation.tween ~from:0.0 ~to_:400.0
        ~interpolate:Animation.Interpolate.float
 
@@ -23,18 +23,18 @@ let view model =
 
   view
     ~style:
-      (Style.default
-      |> Style.with_background (Color.make ~r:240 ~g:240 ~b:245 ())
-      |> Style.with_flex_grow 1.0)
+      Style.(default
+      |> with_background (Color.white)
+      |> with_flex_grow 1.0)
     [
       view
         ~style:
-          (Style.default
-          |> Style.with_position_type Style.Absolute
-          |> Style.with_size ~width:60 ~height:60
-          |> Style.with_background (Color.make ~r:70 ~g:130 ~b:250 ())
-          |> Style.with_border_radius 8.0
-          |> Style.with_transform (Style.Translate { x; y = 100.0 }))
+          Style.(default
+          |> with_position_type Absolute
+          |> with_size ~width:60 ~height:60
+          |> with_background (Color.black)
+          |> with_border_radius 8.0
+          |> with_transform (Translate { x; y = 100.0 }))
         [];
     ]
 

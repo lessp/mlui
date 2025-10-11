@@ -61,7 +61,6 @@ type 'msg node =
       on_mouse_leave : (int * int -> 'msg option) option;
     }
       -> 'msg node
-  | Fragment : { children : 'msg node list } -> 'msg node
   | Empty : 'msg node
 
 (* Map messages from one type to another *)
@@ -153,52 +152,3 @@ val run :
       Mlui.run ~window ~subscriptions ~init ~update ~view ()
     ]}
 *)
-
-(* MLX/JSX-compatible constructors *)
-module Mlx : sig
-  (* These functions are designed to work with MLX's JSX syntax transformation.
-     They follow the pattern: optional labeled params -> ~children -> unit -> result *)
-
-  (* Wrapper to convert strings into text nodes for JSX *)
-  val string : string -> 'msg node
-
-  (* Helper to flatten a list of nodes into a single node (like React.list in Reason) *)
-  val list : 'msg node list -> 'msg node
-
-  val view :
-    ?style:Style.t ->
-    ?key:string ->
-    ?on_click:(unit -> 'msg option) ->
-    ?on_mouse_down:(int * int -> 'msg option) ->
-    ?on_mouse_up:(int * int -> 'msg option) ->
-    ?on_mouse_move:(int * int -> 'msg option) ->
-    ?on_mouse_enter:(int * int -> 'msg option) ->
-    ?on_mouse_leave:(int * int -> 'msg option) ->
-    children:'msg node list ->
-    unit ->
-    'msg node
-  [@@JSX]
-
-  val text :
-    ?style:Style.t ->
-    ?key:string ->
-    ?on_click:(unit -> 'msg option) ->
-    children:'msg node list ->
-    unit ->
-    'msg node
-  [@@JSX]
-
-  val canvas :
-    ?style:Style.t ->
-    ?key:string ->
-    ?on_click:(unit -> 'msg option) ->
-    ?on_mouse_down:(int * int -> 'msg option) ->
-    ?on_mouse_up:(int * int -> 'msg option) ->
-    ?on_mouse_move:(int * int -> 'msg option) ->
-    ?on_mouse_enter:(int * int -> 'msg option) ->
-    ?on_mouse_leave:(int * int -> 'msg option) ->
-    children:primitive list ->
-    unit ->
-    'msg node
-  [@@JSX]
-end

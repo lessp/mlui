@@ -3,6 +3,13 @@
 (* An animation is a function from time to value *)
 type 'a t = float -> 'a
 
+(* Repeat mode for looping animations *)
+type repeat_mode =
+  | Normal           (* Restart from beginning each cycle: 0→1, 0→1, 0→1... *)
+  | Reverse          (* Always play backward: 1→0, 1→0, 1→0... *)
+  | Alternate        (* Ping-pong forward/backward: 0→1, 1→0, 0→1, 1→0... *)
+  | AlternateReverse (* Ping-pong backward/forward: 1→0, 0→1, 1→0, 0→1... *)
+
 (* Create an animation that maps [0, duration] to [0.0, 1.0] *)
 let animate ~duration : float t =
  fun time ->
@@ -40,13 +47,28 @@ let delay (delay_duration : float) (anim : 'a t) : 'a t =
     anim (time -. delay_duration)
 
 (* Repeat an animation infinitely *)
-let repeat (anim : 'a t) ~duration : 'a t =
+let repeat ?(mode = Normal) (anim : 'a t) ~duration : 'a t =
  fun time ->
   if time < 0.0 then
     anim 0.0
   else
     let wrapped = mod_float time duration in
-    anim wrapped
+    let cycle = int_of_float (time /. duration) in
+    match mode with
+    | Normal ->
+        anim wrapped
+    | Reverse ->
+        anim (duration -. wrapped)
+    | Alternate ->
+        if cycle mod 2 = 0 then
+          anim wrapped
+        else
+          anim (duration -. wrapped)
+    | AlternateReverse ->
+        if cycle mod 2 = 0 then
+          anim (duration -. wrapped)
+        else
+          anim wrapped
 
 (* Run two animations in sequence *)
 let sequence (first : 'a t) (second : 'a t) ~first_duration : 'a t =

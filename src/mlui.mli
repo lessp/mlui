@@ -104,50 +104,6 @@ val fill_and_stroke : Color.t -> Color.t -> float -> primitive_style
 
 val map_msg : ('a -> 'b) -> 'a node -> 'b node
 
-(** {1 MLX/JSX Support} *)
-
-module Mlx : sig
-  val string : string -> 'msg node
-  val list : 'msg node list -> 'msg node
-
-  val view :
-    ?style:Style.t ->
-    ?key:string ->
-    ?on_click:(unit -> 'msg option) ->
-    ?on_mouse_down:(int * int -> 'msg option) ->
-    ?on_mouse_up:(int * int -> 'msg option) ->
-    ?on_mouse_move:(int * int -> 'msg option) ->
-    ?on_mouse_enter:(int * int -> 'msg option) ->
-    ?on_mouse_leave:(int * int -> 'msg option) ->
-    children:'msg node list ->
-    unit ->
-    'msg node
-  [@@JSX]
-
-  val text :
-    ?style:Style.t ->
-    ?key:string ->
-    ?on_click:(unit -> 'msg option) ->
-    children:'msg node list ->
-    unit ->
-    'msg node
-  [@@JSX]
-
-  val canvas :
-    ?style:Style.t ->
-    ?key:string ->
-    ?on_click:(unit -> 'msg option) ->
-    ?on_mouse_down:(int * int -> 'msg option) ->
-    ?on_mouse_up:(int * int -> 'msg option) ->
-    ?on_mouse_move:(int * int -> 'msg option) ->
-    ?on_mouse_enter:(int * int -> 'msg option) ->
-    ?on_mouse_leave:(int * int -> 'msg option) ->
-    children:primitive list ->
-    unit ->
-    'msg node
-  [@@JSX]
-end
-
 (** {1 Application Runtime} *)
 
 val run :

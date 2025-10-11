@@ -52,9 +52,6 @@ let fill = Ui.fill
 let stroke = Ui.stroke
 let fill_and_stroke = Ui.fill_and_stroke
 
-(* Re-export Mlx module *)
-module Mlx = Ui.Mlx
-
 (* Main run function *)
 let run ~window ?subscriptions ~init ~update ~view () =
   Ui.run ~window ?subscriptions ~init ~update ~view ()

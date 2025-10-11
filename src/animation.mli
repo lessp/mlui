@@ -18,6 +18,13 @@
 type 'a t
 (** An animation that produces values of type 'a *)
 
+type repeat_mode =
+  | Normal           (** Restart from beginning each cycle: 0→1, 0→1, 0→1... *)
+  | Reverse          (** Always play backward: 1→0, 1→0, 1→0... *)
+  | Alternate        (** Ping-pong forward/backward: 0→1, 1→0, 0→1, 1→0... *)
+  | AlternateReverse (** Ping-pong backward/forward: 1→0, 0→1, 1→0, 0→1... *)
+(** Repeat mode for looping animations *)
+
 (** {1 Creating Animations} *)
 
 val animate : duration:float -> float t
@@ -50,9 +57,14 @@ val delay : float -> 'a t -> 'a t
 (** [delay duration anim] delays the start of an animation by [duration]
     seconds. During the delay, the animation will return its value at time 0. *)
 
-val repeat : 'a t -> duration:float -> 'a t
-(** [repeat anim ~duration] repeats an animation infinitely. The animation will
-    loop every [duration] seconds. *)
+val repeat : ?mode:repeat_mode -> 'a t -> duration:float -> 'a t
+(** [repeat ?mode anim ~duration] repeats an animation infinitely. The animation
+    will loop every [duration] seconds. The [mode] parameter (default: [Normal])
+    controls how the animation repeats:
+    - [Normal]: Restart from beginning each cycle
+    - [Reverse]: Always play backward
+    - [Alternate]: Ping-pong forward then backward
+    - [AlternateReverse]: Ping-pong backward then forward *)
 
 val sequence : 'a t -> 'a t -> first_duration:float -> 'a t
 (** [sequence first second ~first_duration] runs [first] then [second] in

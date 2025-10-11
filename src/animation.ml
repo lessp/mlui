@@ -5,9 +5,9 @@ type 'a t = float -> 'a
 
 (* Repeat mode for looping animations *)
 type repeat_mode =
-  | Normal           (* Restart from beginning each cycle: 0→1, 0→1, 0→1... *)
-  | Reverse          (* Always play backward: 1→0, 1→0, 1→0... *)
-  | Alternate        (* Ping-pong forward/backward: 0→1, 1→0, 0→1, 1→0... *)
+  | Normal (* Restart from beginning each cycle: 0→1, 0→1, 0→1... *)
+  | Reverse (* Always play backward: 1→0, 1→0, 1→0... *)
+  | Alternate (* Ping-pong forward/backward: 0→1, 1→0, 0→1, 1→0... *)
   | AlternateReverse (* Ping-pong backward/forward: 1→0, 0→1, 1→0, 0→1... *)
 
 (* Create an animation that maps [0, duration] to [0.0, 1.0] *)
@@ -100,8 +100,7 @@ module Interpolate = struct
   let position (ax, ay) (bx, by) (t : float) : float * float =
     (float ax bx t, float ay by t)
 
-  let color (a : Color.t) (b : Color.t) (t : float) :
-      Color.t =
+  let color (a : Color.t) (b : Color.t) (t : float) : Color.t =
     Color.make ~r:(int a.r b.r t) ~g:(int a.g b.g t) ~b:(int a.b b.b t)
       ~a:(int a.a b.a t) ()
 end
@@ -208,18 +207,19 @@ module Animated = struct
     duration : float;
   }
 
-  let make initial = {
-    current = initial;
-    target = initial;
-    animation = None;
-    start_time = 0.0;
-    duration = 0.0;
-  }
+  let make initial =
+    {
+      current = initial;
+      target = initial;
+      animation = None;
+      start_time = 0.0;
+      duration = 0.0;
+    }
 
-  let set_target ?(duration = 0.3) ?(easing = Easing.ease_out_cubic) ~interpolate target current_time state =
+  let set_target ?(duration = 0.3) ?(easing = Easing.ease_out_cubic)
+      ~interpolate target current_time state =
     let animation =
-      animate ~duration
-      |> ease easing
+      animate ~duration |> ease easing
       |> tween ~from:state.current ~to_:target ~interpolate
     in
     {
@@ -232,7 +232,8 @@ module Animated = struct
 
   let step current_time state =
     match state.animation with
-    | None -> state
+    | None ->
+        state
     | Some anim ->
         let elapsed = current_time -. state.start_time in
         let value = anim elapsed in

@@ -121,18 +121,20 @@ val run :
       open Mlui
 
       let subscriptions model =
-        Sub.batch [
-          Sub.on_animation_frame (fun dt -> Msg.Tick dt);
-          Sub.on_key_down (fun key -> Msg.KeyPressed key);
-        ]
+        Sub.batch
+          [
+            Sub.on_animation_frame (fun dt -> Msg.Tick dt);
+            Sub.on_key_down (fun key -> Msg.KeyPressed key);
+          ]
 
       let update msg model =
         match msg with
-        | Msg.Tick dt -> ({ model with time = model.time +. dt }, Cmd.none)
-        | Msg.KeyPressed key -> (model, Cmd.none)
+        | Msg.Tick dt ->
+            ({ model with time = model.time +. dt }, Cmd.none)
+        | Msg.KeyPressed key ->
+            (model, Cmd.none)
 
       let () =
         let window = Window.make ~width:800 ~height:600 ~title:"My App" () in
         run ~window ~subscriptions ~init:(Model.init ()) ~update ~view ()
-    ]}
-*)
+    ]} *)

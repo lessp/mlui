@@ -150,7 +150,7 @@ module Renderer = struct
       Wall.Image.paint
         (Wall.Paint.color (Wall.Color.v 0.0 0.0 0.0 1.0))
         (Wall.Image.fill_path (fun ctx ->
-            Wall.Path.rect ctx ~x:0.0 ~y:0.0 ~w:state.width ~h:state.height))
+             Wall.Path.rect ctx ~x:0.0 ~y:0.0 ~w:state.width ~h:state.height))
     in
     let scene = render_node ~x:0 ~y:0 node in
     let fps_text =
@@ -180,7 +180,7 @@ module Renderer = struct
       Wall.Image.paint
         (Wall.Paint.color (Wall.Color.v 0.0 0.0 0.0 1.0))
         (Wall.Image.fill_path (fun ctx ->
-            Wall.Path.rect ctx ~x:0.0 ~y:0.0 ~w:state.width ~h:state.height))
+             Wall.Path.rect ctx ~x:0.0 ~y:0.0 ~w:state.width ~h:state.height))
     in
     let scene = render_primitives_list primitives in
     let fps_text =

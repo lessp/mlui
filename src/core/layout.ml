@@ -735,7 +735,9 @@ module FlexIntegrationImpl = struct
                   build_node_with_bounds ~offset_x:abs_x ~offset_y:abs_y
                     ~path:(path @ [ i ]) flex_node.children.(i) child
                 else
-                  let () = Printf.eprintf "WARNING: child %d out of bounds!\n%!" i in
+                  let () =
+                    Printf.eprintf "WARNING: child %d out of bounds!\n%!" i
+                  in
                   {
                     node = child;
                     bounds = { x = 0.0; y = 0.0; width = 0.0; height = 0.0 };

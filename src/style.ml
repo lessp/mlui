@@ -76,8 +76,7 @@ let with_background color style = { style with background_color = Some color }
 let with_border ~color ~width style =
   { style with border_color = Some color; border_width = Some width }
 
-let with_border_radius radius style =
-  { style with border_radius = Some radius }
+let with_border_radius radius style = { style with border_radius = Some radius }
 
 let with_text_color color style = { style with text_color = Some color }
 

@@ -111,14 +111,16 @@ let update msg model =
           model.particles
       in
 
-      ({ model with particles = updated_particles; current_time = new_time }, Cmd.none)
+      ( { model with particles = updated_particles; current_time = new_time },
+        Cmd.none )
   | Msg.Click (x, y) ->
       let new_particles = spawn_particles x y model.current_time in
-      ({
-        model with
-        particles = model.particles @ new_particles;
-        click_count = model.click_count + 1;
-      }, Cmd.none)
+      ( {
+          model with
+          particles = model.particles @ new_particles;
+          click_count = model.click_count + 1;
+        },
+        Cmd.none )
 
 let view (model : model) : Msg.t Mlui.node =
   let opacity_anim, size_anim = make_particle_animations () in
@@ -153,13 +155,13 @@ let view (model : model) : Msg.t Mlui.node =
     ]
 
 let subscriptions _model =
-  Sub.batch [
-    Sub.on_animation_frame (fun dt -> Msg.Tick dt);
-    Sub.on_mouse_down (fun x y -> Msg.Click (x, y));
-  ]
+  Sub.batch
+    [
+      Sub.on_animation_frame (fun dt -> Msg.Tick dt);
+      Sub.on_mouse_down (fun x y -> Msg.Click (x, y));
+    ]
 
 let run () =
-
   let initial_model = { particles = []; current_time = 0.0; click_count = 0 } in
 
   let window =

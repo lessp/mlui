@@ -28,11 +28,7 @@ end
 
 let render_box label style color =
   view ~style:(style color)
-    [
-      text
-        ~style:(Style.default |> Style.with_text_color Color.white)
-        label;
-    ]
+    [ text ~style:(Style.default |> Style.with_text_color Color.white) label ]
 
 let view (_ : unit) : unit Mlui.node =
   view ~style:Styles.root

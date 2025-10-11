@@ -20,9 +20,12 @@ let none = None
 
 let batch subs =
   match List.filter (fun s -> s <> None) subs with
-  | [] -> None
-  | [single] -> single
-  | many -> Batch many
+  | [] ->
+      None
+  | [ single ] ->
+      single
+  | many ->
+      Batch many
 
 (* Time subscriptions *)
 
@@ -54,24 +57,37 @@ end
 
 (* Subscription comparison for diffing *)
 
-let rec equal : 'msg 'msg2. 'msg t -> 'msg2 t -> bool = fun s1 s2 ->
-  match s1, s2 with
-  | None, None -> true
-  | AnimationFrame _, AnimationFrame _ -> true
-  | KeyUp _, KeyUp _ -> true
-  | KeyDown _, KeyDown _ -> true
-  | MouseDown _, MouseDown _ -> true
-  | MouseUp _, MouseUp _ -> true
-  | MouseMove _, MouseMove _ -> true
-  | TrayClick (t1, _), TrayClick (t2, _) -> t1 == t2
-  | Quit _, Quit _ -> true
+let rec equal : 'msg 'msg2. 'msg t -> 'msg2 t -> bool =
+ fun s1 s2 ->
+  match (s1, s2) with
+  | None, None ->
+      true
+  | AnimationFrame _, AnimationFrame _ ->
+      true
+  | KeyUp _, KeyUp _ ->
+      true
+  | KeyDown _, KeyDown _ ->
+      true
+  | MouseDown _, MouseDown _ ->
+      true
+  | MouseUp _, MouseUp _ ->
+      true
+  | MouseMove _, MouseMove _ ->
+      true
+  | TrayClick (t1, _), TrayClick (t2, _) ->
+      t1 == t2
+  | Quit _, Quit _ ->
+      true
   | Batch subs1, Batch subs2 ->
-      List.length subs1 = List.length subs2 &&
-      List.for_all2 equal subs1 subs2
-  | _ -> false
+      List.length subs1 = List.length subs2 && List.for_all2 equal subs1 subs2
+  | _ ->
+      false
 
 (* Flatten nested batches *)
 let rec flatten : 'msg t -> 'msg t list = function
-  | None -> []
-  | Batch subs -> List.concat_map flatten subs
-  | sub -> [sub]
+  | None ->
+      []
+  | Batch subs ->
+      List.concat_map flatten subs
+  | sub ->
+      [ sub ]

@@ -37,11 +37,12 @@ let update (msg : Msg.t) (model : Model.t) =
       | ColorPalette.Msg.SetBackgroundColor color ->
           ({ model with background = color }, Cmd.none)
       | ColorPalette.Msg.SwapColors ->
-          ({
-            model with
-            foreground = model.background;
-            background = model.foreground;
-          }, Cmd.none))
+          ( {
+              model with
+              foreground = model.background;
+              background = model.foreground;
+            },
+            Cmd.none ))
   | CanvasMsg msg -> (
       let updated_canvas, out_msg = Canvas.update msg model.canvas_model in
       let model' = { model with canvas_model = updated_canvas } in
@@ -129,16 +130,10 @@ let view_subtool tool (model : Model.t) =
 let group_in_pairs items =
   let rec loop = function
     | a :: b :: rest ->
-        view
-          ~style:(Style.default |> Style.with_flex_direction Row)
-          [ a; b ]
+        view ~style:(Style.default |> Style.with_flex_direction Row) [ a; b ]
         :: loop rest
     | [ a ] ->
-        [
-          view
-            ~style:(Style.default |> Style.with_flex_direction Row)
-            [ a ];
-        ]
+        [ view ~style:(Style.default |> Style.with_flex_direction Row) [ a ] ]
     | [] ->
         []
   in
@@ -154,8 +149,7 @@ let view (model : Model.t) =
             [
               Common.Tool.all_family_defaults
               |> List.map (fun tool -> view_tool tool model)
-              |> group_in_pairs
-              |> view ~style:Styles.toolbar;
+              |> group_in_pairs |> view ~style:Styles.toolbar;
               (match Common.Tool.get_subtools model.selected_tool with
               | Some subtools ->
                   subtools
@@ -176,10 +170,7 @@ let view (model : Model.t) =
 
 let () =
   let window = Window.make ~width:800 ~height:600 () in
-  match
-    Mlui.run ~window
-      ~init:(Model.init ()) ~update ~view ()
-  with
+  match Mlui.run ~window ~init:(Model.init ()) ~update ~view () with
   | Ok () ->
       ()
   | Error (`Msg msg) ->

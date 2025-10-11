@@ -2,22 +2,28 @@
 
 (** {1 Layout Types} *)
 
-type flex_direction = Row | Column | RowReverse | ColumnReverse
-(** Flexbox direction *)
+type flex_direction =
+  | Row
+  | Column
+  | RowReverse
+  | ColumnReverse  (** Flexbox direction *)
 
 type justify_content =
   | FlexStart
   | Center
   | FlexEnd
   | SpaceBetween
-  | SpaceAround
-(** Flexbox justify content alignment *)
+  | SpaceAround  (** Flexbox justify content alignment *)
 
-type align_items = Stretch | Start | Center | End
-(** Flexbox align items alignment *)
+type align_items =
+  | Stretch
+  | Start
+  | Center
+  | End  (** Flexbox align items alignment *)
 
-type position_type = Relative | Absolute
-(** Position type for element positioning *)
+type position_type =
+  | Relative
+  | Absolute  (** Position type for element positioning *)
 
 type transform =
   | Translate of { x : float; y : float }
@@ -26,8 +32,7 @@ type transform =
   | Scale of { x : float; y : float }
   | ScaleUniform of float  (** Scale both axes equally *)
   | Rotate of float
-  | Compose of transform list
-(** Transform operations for visual effects *)
+  | Compose of transform list  (** Transform operations for visual effects *)
 
 (** {1 Style Type} *)
 

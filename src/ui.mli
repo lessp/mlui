@@ -129,8 +129,6 @@ val fill : Color.t -> primitive_style
 val stroke : Color.t -> float -> primitive_style
 val fill_and_stroke : Color.t -> Color.t -> float -> primitive_style
 
-
-
 val run :
   window:Window.t ->
   ?subscriptions:('model -> 'msg Subscription.t) ->
@@ -144,11 +142,10 @@ val run :
     Example:
     {[
       let subscriptions model =
-        Sub.batch [
-          Sub.on_animation_frame (fun dt -> Msg.Tick dt);
-          Sub.on_key_down (fun key -> Msg.KeyPressed key);
-        ]
-
-      Mlui.run ~window ~subscriptions ~init ~update ~view ()
-    ]}
-*)
+        Sub.batch
+          [
+            Sub.on_animation_frame (fun dt -> Msg.Tick dt);
+            Sub.on_key_down (fun key -> Msg.KeyPressed key);
+          ]
+          Mlui.run ~window ~subscriptions ~init ~update ~view ()
+    ]} *)

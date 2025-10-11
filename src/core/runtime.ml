@@ -94,8 +94,10 @@ module Engine = struct
       | Cmd.HideWindow ->
           Printf.printf "[Runtime] Executing HideWindow\n%!";
           Sdl.hide_window window
-      | Cmd.None -> ()
-      | Cmd.Batch cmds -> List.iter execute_cmd cmds
+      | Cmd.None ->
+          ()
+      | Cmd.Batch cmds ->
+          List.iter execute_cmd cmds
     in
 
     let dispatch_to_node event node_info =
@@ -185,53 +187,64 @@ module Engine = struct
         active_subs := new_subs;
         (* Check if we have an animation frame subscription *)
         let flattened = Subscription.flatten new_subs in
-        has_animation_frame_sub := List.exists (function
-          | Subscription.AnimationFrame _ -> true
-          | _ -> false
-        ) flattened;
+        has_animation_frame_sub :=
+          List.exists
+            (function Subscription.AnimationFrame _ -> true | _ -> false)
+            flattened;
 
         (* Update tray subscriptions *)
-        let new_tray_subs = List.filter_map (function
-          | Subscription.TrayClick (tray, msg) ->
-              Some (tray, (fun () ->
-                Printf.printf "[Runtime] Tray callback fired\n%!";
-                let new_model, cmd = update msg !model in
-                model := new_model;
-                execute_cmd cmd))
-          | _ -> None
-        ) flattened in
+        let new_tray_subs =
+          List.filter_map
+            (function
+              | Subscription.TrayClick (tray, msg) ->
+                  Some
+                    ( tray,
+                      fun () ->
+                        Printf.printf "[Runtime] Tray callback fired\n%!";
+                        let new_model, cmd = update msg !model in
+                        model := new_model;
+                        execute_cmd cmd )
+              | _ ->
+                  None)
+            flattened
+        in
 
         Printf.printf "[Runtime] Tray subs - old: %d, new: %d\n%!"
-          (List.length !active_tray_subs) (List.length new_tray_subs);
+          (List.length !active_tray_subs)
+          (List.length new_tray_subs);
 
         (* Clear old tray subscriptions that are no longer active *)
-        List.iter (fun (tray, _) ->
-          if not (List.exists (fun (t, _) -> t == tray) new_tray_subs) then begin
-            Printf.printf "[Runtime] Clearing tray subscription\n%!";
-            Tray.clear_subscription_callback tray
-          end
-        ) !active_tray_subs;
+        List.iter
+          (fun (tray, _) ->
+            if not (List.exists (fun (t, _) -> t == tray) new_tray_subs) then begin
+              Printf.printf "[Runtime] Clearing tray subscription\n%!";
+              Tray.clear_subscription_callback tray
+            end)
+          !active_tray_subs;
 
         (* Setup new tray subscriptions *)
-        List.iter (fun (tray, callback) ->
-          Printf.printf "[Runtime] Setting up tray subscription\n%!";
-          Tray.setup_subscription_callback tray callback
-        ) new_tray_subs;
+        List.iter
+          (fun (tray, callback) ->
+            Printf.printf "[Runtime] Setting up tray subscription\n%!";
+            Tray.setup_subscription_callback tray callback)
+          new_tray_subs;
 
-        active_tray_subs := new_tray_subs;
+        active_tray_subs := new_tray_subs
       end;
 
       (* Process animation frame subscription *)
       if !has_animation_frame_sub then begin
         let flattened = Subscription.flatten !active_subs in
-        List.iter (function
-          | Subscription.AnimationFrame f ->
-              let msg = f delta_seconds in
-              let new_model, cmd = update msg !model in
-              model := new_model;
-              execute_cmd cmd
-          | _ -> ()
-        ) flattened;
+        List.iter
+          (function
+            | Subscription.AnimationFrame f ->
+                let msg = f delta_seconds in
+                let new_model, cmd = update msg !model in
+                model := new_model;
+                execute_cmd cmd
+            | _ ->
+                ())
+          flattened
       end;
 
       (* Process tray subscription messages *)
@@ -241,12 +254,9 @@ module Engine = struct
       (* Process quit subscription *)
       let has_quit_sub = ref false in
       let flattened = Subscription.flatten !active_subs in
-      List.iter (function
-        | Subscription.Quit _ -> has_quit_sub := true
-        | _ -> ()
-      ) flattened;
-
-
+      List.iter
+        (function Subscription.Quit _ -> has_quit_sub := true | _ -> ())
+        flattened;
 
       match Sdl.poll_event (Some event) with
       | false ->
@@ -257,13 +267,15 @@ module Engine = struct
               (* Process quit subscription first *)
               if !has_quit_sub then begin
                 let flattened = Subscription.flatten !active_subs in
-                List.iter (function
-                  | Subscription.Quit msg ->
-                      let new_model, cmd = update msg !model in
-                      model := new_model;
-                      execute_cmd cmd
-                  | _ -> ()
-                ) flattened;
+                List.iter
+                  (function
+                    | Subscription.Quit msg ->
+                        let new_model, cmd = update msg !model in
+                        model := new_model;
+                        execute_cmd cmd
+                    | _ ->
+                        ())
+                  flattened
               end;
               ()
           | Some ev ->
@@ -272,60 +284,71 @@ module Engine = struct
               (match ev with
               | Ui_event.KeyUp key_name ->
                   let flattened = Subscription.flatten !active_subs in
-                  List.iter (function
-                    | Subscription.KeyUp f ->
-                        let msg = f key_name in
-                        let new_model, cmd = update msg !model in
-                        model := new_model;
-                        execute_cmd cmd;
-                        sub_handled := true
-                    | _ -> ()
-                  ) flattened
+                  List.iter
+                    (function
+                      | Subscription.KeyUp f ->
+                          let msg = f key_name in
+                          let new_model, cmd = update msg !model in
+                          model := new_model;
+                          execute_cmd cmd;
+                          sub_handled := true
+                      | _ ->
+                          ())
+                    flattened
               | Ui_event.KeyDown key_name ->
                   let flattened = Subscription.flatten !active_subs in
-                  List.iter (function
-                    | Subscription.KeyDown f ->
-                        let msg = f key_name in
-                        let new_model, cmd = update msg !model in
-                        model := new_model;
-                        execute_cmd cmd;
-                        sub_handled := true
-                    | _ -> ()
-                  ) flattened
+                  List.iter
+                    (function
+                      | Subscription.KeyDown f ->
+                          let msg = f key_name in
+                          let new_model, cmd = update msg !model in
+                          model := new_model;
+                          execute_cmd cmd;
+                          sub_handled := true
+                      | _ ->
+                          ())
+                    flattened
               | Ui_event.MouseDown { x; y; _ } ->
                   let flattened = Subscription.flatten !active_subs in
-                  List.iter (function
-                    | Subscription.MouseDown f ->
-                        let msg = f x y in
-                        let new_model, cmd = update msg !model in
-                        model := new_model;
-                        execute_cmd cmd;
-                        sub_handled := true
-                    | _ -> ()
-                  ) flattened
+                  List.iter
+                    (function
+                      | Subscription.MouseDown f ->
+                          let msg = f x y in
+                          let new_model, cmd = update msg !model in
+                          model := new_model;
+                          execute_cmd cmd;
+                          sub_handled := true
+                      | _ ->
+                          ())
+                    flattened
               | Ui_event.MouseUp { x; y; _ } ->
                   let flattened = Subscription.flatten !active_subs in
-                  List.iter (function
-                    | Subscription.MouseUp f ->
-                        let msg = f x y in
-                        let new_model, cmd = update msg !model in
-                        model := new_model;
-                        execute_cmd cmd;
-                        sub_handled := true
-                    | _ -> ()
-                  ) flattened
+                  List.iter
+                    (function
+                      | Subscription.MouseUp f ->
+                          let msg = f x y in
+                          let new_model, cmd = update msg !model in
+                          model := new_model;
+                          execute_cmd cmd;
+                          sub_handled := true
+                      | _ ->
+                          ())
+                    flattened
               | Ui_event.MouseMove { x; y } ->
                   let flattened = Subscription.flatten !active_subs in
-                  List.iter (function
-                    | Subscription.MouseMove f ->
-                        let msg = f x y in
-                        let new_model, cmd = update msg !model in
-                        model := new_model;
-                        execute_cmd cmd;
-                        sub_handled := true
-                    | _ -> ()
-                  ) flattened
-              | _ -> ());
+                  List.iter
+                    (function
+                      | Subscription.MouseMove f ->
+                          let msg = f x y in
+                          let new_model, cmd = update msg !model in
+                          model := new_model;
+                          execute_cmd cmd;
+                          sub_handled := true
+                      | _ ->
+                          ())
+                    flattened
+              | _ ->
+                  ());
 
               let ui_handled =
                 match (!node_tree, ev) with
@@ -343,7 +366,7 @@ module Engine = struct
                 | _ ->
                     false
               in
-              if not ui_handled && not !sub_handled then
+              if (not ui_handled) && not !sub_handled then
                 loop ()
               else
                 loop ()
@@ -369,5 +392,5 @@ let run ~window ?subscriptions ~init ~update ~view () =
     Renderer.render_view_with_primitives ~fps state primitives ()
   in
   let window_config = window in
-  Engine.run ~window:window_config ~init ~update ~view
-    ~subscriptions ~is_quit ~render
+  Engine.run ~window:window_config ~init ~update ~view ~subscriptions ~is_quit
+    ~render

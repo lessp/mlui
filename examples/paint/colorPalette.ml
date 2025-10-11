@@ -60,8 +60,7 @@ let view ~foreground ~background =
         ];
       (* Color palette *)
       view
-        ~style:
-          Style.(default |> with_flex_direction Column |> with_padding 5)
+        ~style:Style.(default |> with_flex_direction Column |> with_padding 5)
         (all_colors
         |> List.map @@ fun row ->
            view

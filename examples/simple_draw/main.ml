@@ -72,8 +72,7 @@ module Styles = struct
     |> Style.with_background Color.gray
 
   let canvas =
-    Style.default
-    |> Style.with_flex_grow 1.0
+    Style.default |> Style.with_flex_grow 1.0
     |> Style.with_background Color.white
 
   let primary_button =
@@ -172,8 +171,7 @@ let view (model : Model.t) : Msg.t Mlui.node =
   in
 
   let toolbar =
-    view ~style:Styles.toolbar
-      ([ clear_button ] @ color_buttons @ size_buttons)
+    view ~style:Styles.toolbar ([ clear_button ] @ color_buttons @ size_buttons)
   in
 
   (* Create canvas with event handlers *)
@@ -197,9 +195,7 @@ let view (model : Model.t) : Msg.t Mlui.node =
 let () =
   let window = Window.make ~width:800 ~height:600 () in
 
-  match
-    Mlui.run ~window ~init:(Model.init ()) ~update ~view ()
-  with
+  match Mlui.run ~window ~init:(Model.init ()) ~update ~view () with
   | Ok () ->
       ()
   | Error (`Msg msg) ->

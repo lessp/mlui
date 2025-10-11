@@ -136,14 +136,12 @@ let drawing_to_primitive (drawing : Common.Drawing.t) : primitive =
 
       match drawing.tool with
       | Tool.Rectangle `Outline ->
-          rectangle ~x ~y ~width ~height
-            ~style:(stroke drawing.foreground 2.0)
+          rectangle ~x ~y ~width ~height ~style:(stroke drawing.foreground 2.0)
       | Tool.Rectangle `Filled ->
           rectangle ~x ~y ~width ~height ~style:(fill drawing.foreground)
       | Tool.Rectangle `FilledWithOutline ->
           rectangle ~x ~y ~width ~height
-            ~style:
-              (fill_and_stroke drawing.background drawing.foreground 2.0)
+            ~style:(fill_and_stroke drawing.background drawing.foreground 2.0)
       | Tool.Ellipse `Outline ->
           let cx = x +. (width /. 2.0) in
           let cy = y +. (height /. 2.0) in
@@ -162,8 +160,7 @@ let drawing_to_primitive (drawing : Common.Drawing.t) : primitive =
           let rx = width /. 2.0 in
           let ry = height /. 2.0 in
           ellipse ~cx ~cy ~rx ~ry
-            ~style:
-              (fill_and_stroke drawing.background drawing.foreground 2.0)
+            ~style:(fill_and_stroke drawing.background drawing.foreground 2.0)
       | Tool.Line thickness ->
           let points = [ (x1, y1); (x2, y2) ] in
           let width =

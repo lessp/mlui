@@ -82,7 +82,8 @@ let handle_node_event_with_bounds (event : Ui_event.t)
   | _ ->
       None
 
-let handle_mouse_motion ~tree ~hovered_path ~dispatch_to_node (move : Ui_event.t) =
+let handle_mouse_motion ~tree ~hovered_path ~dispatch_to_node
+    (move : Ui_event.t) =
   match move with
   | Ui_event.MouseMove { x; y } ->
       let pos = Position.make ~x ~y in

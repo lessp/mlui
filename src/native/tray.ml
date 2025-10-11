@@ -14,46 +14,42 @@ let subscription_messages : tray_message Queue.t = Queue.create ()
 external make_impl : string option -> t = "mlui_tray_make"
 external set_title_impl : t -> string -> t = "mlui_tray_set_title"
 external remove_impl : t -> unit = "mlui_tray_remove"
-external set_on_click_impl : t -> (unit -> unit) -> unit = "mlui_tray_set_on_click"
+external set_on_click_impl : t -> (unit -> unit) -> unit
+  = "mlui_tray_set_on_click"
 
 let is_macos () =
   match Sys.os_type with
-  | "Unix" -> (
+  | "Unix" ->
       (* Check if we're on macOS by looking for characteristic paths *)
       Sys.file_exists "/System/Library/CoreServices/Finder.app"
-    )
-  | _ -> false
+  | _ ->
+      false
 
 let make ?image_path () =
-  if not (is_macos ()) then (
+  if not (is_macos ()) then
     (* On non-macOS platforms, log a warning but don't fail *)
     Printf.eprintf "[Tray] Warning: Tray support is only available on macOS\n%!";
-  );
 
   let tray = make_impl image_path in
 
   (* Register finalizer to clean up when GC collects this value *)
-  Gc.finalise (fun t ->
-    try
-      remove_impl t
-    with _ ->
-      (* Suppress errors during finalization *)
-      ()
-  ) tray;
+  Gc.finalise
+    (fun t ->
+      try remove_impl t
+      with _ ->
+        (* Suppress errors during finalization *)
+        ())
+    tray;
 
   tray
 
-let set_title tray ~text =
-  set_title_impl tray text
+let set_title tray ~text = set_title_impl tray text
 
-let remove tray =
-  remove_impl tray
+let remove tray = remove_impl tray
 
 let set_on_click tray on_click =
   (* Wrap callback to queue messages for main thread *)
-  set_on_click_impl tray (fun () ->
-    Queue.add on_click pending_messages
-  )
+  set_on_click_impl tray (fun () -> Queue.add on_click pending_messages)
 
 let poll_events () =
   (* Process all pending messages *)
@@ -65,12 +61,10 @@ let poll_events () =
 (* Internal function for subscription system *)
 let setup_subscription_callback tray on_msg =
   set_on_click_impl tray (fun () ->
-    Queue.add { tray; dispatch = on_msg } subscription_messages
-  )
+      Queue.add { tray; dispatch = on_msg } subscription_messages)
 
 (* Internal function for subscription system *)
-let clear_subscription_callback tray =
-  set_on_click_impl tray (fun () -> ())
+let clear_subscription_callback tray = set_on_click_impl tray (fun () -> ())
 
 (* Internal function for subscription system - called by runtime *)
 let poll_subscription_messages () =

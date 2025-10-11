@@ -18,12 +18,12 @@
 type 'a t
 (** An animation that produces values of type 'a *)
 
-type repeat_mode =
-  | Normal           (** Restart from beginning each cycle: 0→1, 0→1, 0→1... *)
-  | Reverse          (** Always play backward: 1→0, 1→0, 1→0... *)
-  | Alternate        (** Ping-pong forward/backward: 0→1, 1→0, 0→1, 1→0... *)
-  | AlternateReverse (** Ping-pong backward/forward: 1→0, 0→1, 1→0, 0→1... *)
 (** Repeat mode for looping animations *)
+type repeat_mode =
+  | Normal  (** Restart from beginning each cycle: 0→1, 0→1, 0→1... *)
+  | Reverse  (** Always play backward: 1→0, 1→0, 1→0... *)
+  | Alternate  (** Ping-pong forward/backward: 0→1, 1→0, 0→1, 1→0... *)
+  | AlternateReverse  (** Ping-pong backward/forward: 1→0, 0→1, 1→0, 0→1... *)
 
 (** {1 Creating Animations} *)
 
@@ -177,11 +177,11 @@ end
 
       (* Get current value *)
       let x, y = Animation.Animated.value model.position in
-    ]}
-*)
+    ]} *)
 module Animated : sig
   type 'a state
-  (** State for an animated value, tracking current value, target, and animation *)
+  (** State for an animated value, tracking current value, target, and animation
+  *)
 
   val make : 'a -> 'a state
   (** Create a new animated value at the initial position *)
@@ -196,8 +196,8 @@ module Animated : sig
     'a state
   (** Set a new target and start animating towards it.
       [set_target ~duration ~easing ~interpolate target current_time state]
-      starts a new animation from the current value to [target].
-      Default duration is 0.3s, default easing is ease_out_cubic. *)
+      starts a new animation from the current value to [target]. Default
+      duration is 0.3s, default easing is ease_out_cubic. *)
 
   val step : float -> 'a state -> 'a state
   (** Step the animation forward to the given time *)

@@ -82,8 +82,7 @@ let view (model : Model.t) : Msg.t Mlui.node =
   view
     ~style:(Styles.container model.bg_color)
     [
-      text ~style:Styles.counter_text
-        (Printf.sprintf "Count: %d" model.counter);
+      text ~style:Styles.counter_text (Printf.sprintf "Count: %d" model.counter);
       view ~style:Styles.button_row
         [
           view
@@ -97,8 +96,7 @@ let view (model : Model.t) : Msg.t Mlui.node =
               text
                 ~style:
                   (Style.default
-                  |> Style.with_text_color
-                       (Color.make ~r:255 ~g:255 ~b:255 ())
+                  |> Style.with_text_color (Color.make ~r:255 ~g:255 ~b:255 ())
                   |> Style.with_font_size 24.0)
                 " - ";
             ];
@@ -114,8 +112,7 @@ let view (model : Model.t) : Msg.t Mlui.node =
               text
                 ~style:
                   (Style.default
-                  |> Style.with_text_color
-                       (Color.make ~r:255 ~g:255 ~b:255 ())
+                  |> Style.with_text_color (Color.make ~r:255 ~g:255 ~b:255 ())
                   |> Style.with_font_size 24.0)
                 " + ";
             ];
@@ -131,8 +128,7 @@ let view (model : Model.t) : Msg.t Mlui.node =
               text
                 ~style:
                   (Style.default
-                  |> Style.with_text_color
-                       (Color.make ~r:255 ~g:255 ~b:255 ())
+                  |> Style.with_text_color (Color.make ~r:255 ~g:255 ~b:255 ())
                   |> Style.with_font_size 18.0)
                 "Reset";
             ];
@@ -146,8 +142,7 @@ let view (model : Model.t) : Msg.t Mlui.node =
                  []));
     ]
 
-let subscriptions _model =
-  Sub.on_quit Msg.Reset
+let subscriptions _model = Sub.on_quit Msg.Reset
 
 let run () =
   let window = Window.make ~width:800 ~height:600 ~title:"Counter" () in

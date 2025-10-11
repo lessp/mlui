@@ -5,10 +5,10 @@ type t =
   | ShowWindow
   | HideWindow
   | Batch of t list
-(** Commands that the runtime can execute as side effects.
+      (** Commands that the runtime can execute as side effects.
 
-    Commands are returned from the update function alongside the new model,
-    following The Elm Architecture pattern. *)
+          Commands are returned from the update function alongside the new
+          model, following The Elm Architecture pattern. *)
 
 val none : t
 (** No command - used when update has no side effects *)

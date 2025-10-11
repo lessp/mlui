@@ -4,8 +4,11 @@ module Model = struct
   type t = { tray : Tray.t; window_visible : bool }
 
   let init () =
+    (* NOTE: Text-only tray icons may not show on macOS. *)
+    (* For a visible tray icon, use: *)
+    (* let tray = Tray.make ~image_path:"/path/to/icon.png" () in *)
     let tray = Tray.make () in
-    let _ = Tray.set_title tray ~text:"mlui (click to hide)" in
+    let _ = Tray.set_title tray ~text:{|mlui 😁 (click to hide)|} in
     { tray; window_visible = true }
 end
 
@@ -26,7 +29,7 @@ let update msg model =
       let _ = Tray.set_title model.Model.tray ~text:icon in
       let cmd =
         if new_visible then
-          Cmd.show_window
+          Cmd.focus_window
         else
           Cmd.hide_window
       in

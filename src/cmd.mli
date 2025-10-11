@@ -4,6 +4,7 @@ type t =
   | None
   | ShowWindow
   | HideWindow
+  | FocusWindow
   | Batch of t list
       (** Commands that the runtime can execute as side effects.
 
@@ -18,6 +19,9 @@ val show_window : t
 
 val hide_window : t
 (** Command to hide the application window *)
+
+val focus_window : t
+(** Command to bring the application window to front and focus it *)
 
 val batch : t list -> t
 (** Combine multiple commands into one *)

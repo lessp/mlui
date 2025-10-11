@@ -94,6 +94,10 @@ module Engine = struct
       | Cmd.HideWindow ->
           Printf.printf "[Runtime] Executing HideWindow\n%!";
           Sdl.hide_window window
+      | Cmd.FocusWindow ->
+          Printf.printf "[Runtime] Executing FocusWindow\n%!";
+          Sdl.show_window window;
+          Sdl.raise_window window
       | Cmd.None ->
           ()
       | Cmd.Batch cmds ->

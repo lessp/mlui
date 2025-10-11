@@ -13,3 +13,7 @@
 (executable
  (name simple_loop)
  (libraries mlui))
+
+(executable
+ (name particle_demo_view)
+ (libraries mlui))

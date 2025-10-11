@@ -76,7 +76,19 @@ let with_background color style = { style with background_color = Some color }
 let with_border ~color ~width style =
   { style with border_color = Some color; border_width = Some width }
 
-let with_border_radius radius style = { style with border_radius = Some radius }
+let with_border_radius radius style =
+  (* Clamp radius based on dimensions to prevent rendering issues *)
+  let clamped_radius =
+    match (style.width, style.height) with
+    | Some w, Some h ->
+        let min_dim = float_of_int (min w h) in
+        let max_radius = min_dim /. 2.0 *. 0.999 in
+        min radius max_radius
+    | _ ->
+        (* No dimensions set, use radius as-is *)
+        radius
+  in
+  { style with border_radius = Some clamped_radius }
 
 let with_text_color color style = { style with text_color = Some color }
 

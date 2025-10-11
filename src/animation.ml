@@ -236,11 +236,11 @@ module Animated = struct
         state
     | Some anim ->
         let elapsed = current_time -. state.start_time in
-          let value = anim elapsed in
-          if elapsed >= state.duration then
-            { state with current = state.target; animation = None }
-          else
-            { state with current = value }
+        let value = anim elapsed in
+        if elapsed >= state.duration then
+          { state with current = state.target; animation = None }
+        else
+          { state with current = value }
 
   let value state = state.current
 end

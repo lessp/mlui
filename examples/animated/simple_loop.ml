@@ -30,7 +30,7 @@ let view model =
             default
             |> with_size ~width:60 ~height:60
             |> with_background Color.black
-            |> with_border_radius 16.0
+            |> with_border_radius 30.0
             |> with_transform
                  (TranslateX
                     (Animation.value_at ~time:model.current_time

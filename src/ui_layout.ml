@@ -1,5 +1,8 @@
 open Ui_types
 
+(* Reference flex types from Style module *)
+open Style
+
 module FlexIntegration = struct
   module UINode = struct
     type context = unit
@@ -728,8 +731,8 @@ module FlexIntegrationImpl = struct
           in
 
           (* Process relative children using flex layout *)
-          let () = Printf.eprintf "relative_children count: %d, flex_node.children count: %d\n%!"
-            (List.length relative_children) (Array.length flex_node.children) in
+          (* let () = Printf.eprintf "relative_children count: %d, flex_node.children count: %d\n%!"
+            (List.length relative_children) (Array.length flex_node.children) in *)
           let relative_bounds =
             List.mapi
               (fun i child ->

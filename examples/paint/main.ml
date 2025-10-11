@@ -164,7 +164,7 @@ let view (model : Model.t) =
               | None ->
                   Ui.empty);
             ];
-          Canvas.view ~model:model.canvas_model ~tool:model.selected_tool
+          Canvas.view ~init:model.canvas_model ~tool:model.selected_tool
             ~foreground:model.foreground ~background:model.background
             ~drawings:model.drawings
           |> Ui.map_msg (fun msg -> Msg.CanvasMsg msg);
@@ -178,8 +178,7 @@ let () =
   let window = Ui.Window.make ~width:800 ~height:600 () in
   match
     Ui.run ~window
-      ~handle_event:(fun _ -> None)
-      ~model:(Model.init ()) ~update ~view ()
+      ~init:(Model.init ()) ~update ~view ()
   with
   | Ok () ->
       ()

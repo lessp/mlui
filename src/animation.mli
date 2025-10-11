@@ -85,7 +85,7 @@ module Interpolate : sig
   val position : float * float -> float * float -> float -> float * float
   (** Linear interpolation between two positions (x, y) *)
 
-  val color : Ui_types.Color.t -> Ui_types.Color.t -> float -> Ui_types.Color.t
+  val color : Color.t -> Color.t -> float -> Color.t
   (** Linear interpolation between two colors *)
 end
 

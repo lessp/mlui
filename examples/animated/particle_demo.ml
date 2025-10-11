@@ -152,24 +152,20 @@ let view (model : model) : Msg.t Ui.node =
            model.particles);
     ]
 
+let subscriptions _model =
+  Sub.batch [
+    Sub.on_animation_frame (fun dt -> Msg.Tick dt);
+    Sub.on_mouse_down (fun x y -> Msg.Click (x, y));
+  ]
+
 let run () =
-  let handle_event = function
-    | Ui.Event.Quit ->
-        None
-    | Ui.Event.AnimationFrame dt ->
-        Some (Msg.Tick dt)
-    | Ui.Event.MouseDown { x; y; _ } ->
-        Some (Msg.Click (x, y))
-    | _ ->
-        None
-  in
 
   let initial_model = { particles = []; current_time = 0.0; click_count = 0 } in
 
   let window =
     Ui.Window.make ~width:1024 ~height:768 ~title:"Particle Explosion Demo" ()
   in
-  Ui.run ~window ~handle_event ~model:initial_model ~update ~view ()
+  Ui.run ~window ~subscriptions ~init:initial_model ~update ~view ()
 
 let () =
   match run () with

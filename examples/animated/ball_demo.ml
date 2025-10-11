@@ -17,11 +17,11 @@ end
 
 let update msg model =
   match msg with
-  | Msg.Tick dt -> (
+  | Msg.Tick dt ->
       let new_time = model.current_time +. dt in
 
       (* Update ball position from animation if active *)
-      match model.position_anim with
+      (match model.position_anim with
       | Some anim ->
           let elapsed = new_time -. model.anim_start_time in
           let x, y = Animation.value_at ~time:elapsed anim in
@@ -47,7 +47,7 @@ let update msg model =
               (fun r -> new_time -. r.start_time < 0.8)
               new_model.ripples
           in
-          { new_model with ripples = active_ripples }
+          ({ new_model with ripples = active_ripples }, Cmd.none)
       | None ->
           let new_model = { model with current_time = new_time } in
           (* Remove expired ripples *)
@@ -56,7 +56,7 @@ let update msg model =
               (fun r -> new_time -. r.start_time < 0.8)
               new_model.ripples
           in
-          { new_model with ripples = active_ripples })
+          ({ new_model with ripples = active_ripples }, Cmd.none))
   | Msg.Click (x, y) ->
       (* Add new ripple *)
       let new_ripple =
@@ -76,21 +76,21 @@ let update msg model =
              ~to_:(float_of_int x, float_of_int y)
              ~interpolate:Animation.Interpolate.position
       in
-      {
+      ({
         model with
         position_anim = Some anim;
         anim_start_time = model.current_time;
         ripples = new_ripple :: model.ripples;
-      }
+      }, Cmd.none)
 
 let view (model : model) : Msg.t Ui.node =
   let ball_size = 60 in
 
-  Ui.view
+  view
     ~style:
-      (Ui.Style.default
-      |> Ui.Style.with_background (Ui.Color.make ~r:240 ~g:240 ~b:245 ())
-      |> Ui.Style.with_flex_grow 1.0)
+      Style.(default
+      |> with_background (Color.make ~r:240 ~g:240 ~b:245 ())
+      |> with_flex_grow 1.0)
     ([ (* Render ripples *) ]
     @ List.map
         (fun ripple ->
@@ -116,28 +116,28 @@ let view (model : model) : Msg.t Ui.node =
 
           Ui.canvas
             ~style:
-              (Ui.Style.default
-              |> Ui.Style.with_position_type Ui.Absolute
-              |> Ui.Style.with_transform (Ui.Translate { x = 0.0; y = 0.0 }))
+              Style.(default
+              |> with_position_type Absolute
+              |> with_transform (Translate { x = 0.0; y = 0.0 }))
             [
               Ui.ellipse ~cx:ripple.x ~cy:ripple.y ~rx:radius ~ry:radius
                 ~style:
                   (Ui.stroke
-                     (Ui.Color.make ~r:255 ~g:02 ~b:147 ~a:alpha ())
+                     (Color.make ~r:255 ~g:02 ~b:147 ~a:alpha ())
                      3.0);
             ])
         model.ripples
     @ [
         (* The animated ball using position: absolute + transform *)
-        Ui.view
+        view
           ~style:
-            (Ui.Style.default
-            |> Ui.Style.with_position_type Ui.Absolute
-            |> Ui.Style.with_size ~width:ball_size ~height:ball_size
-            |> Ui.Style.with_background (Ui.Color.make ~r:255 ~g:02 ~b:147 ())
-            |> Ui.Style.with_border_radius 15.0
-            |> Ui.Style.with_transform
-                 (Ui.Translate
+            Style.(default
+            |> with_position_type Absolute
+            |> with_size ~width:ball_size ~height:ball_size
+            |> with_background (Color.make ~r:255 ~g:02 ~b:147 ())
+            |> with_border_radius 15.0
+            |> with_transform
+                 (Translate
                     {
                       x = model.ball_x -. float_of_int (ball_size / 2);
                       y = model.ball_y -. float_of_int (ball_size / 2);
@@ -145,17 +145,13 @@ let view (model : model) : Msg.t Ui.node =
           [];
       ])
 
+let subscriptions _model =
+  Sub.batch [
+    Sub.on_animation_frame (fun dt -> Msg.Tick dt);
+    Sub.on_mouse_down (fun x y -> Msg.Click (x, y));
+  ]
+
 let run () =
-  let handle_event = function
-    | Ui.Event.Quit ->
-        None
-    | Ui.Event.AnimationFrame dt ->
-        Some (Msg.Tick dt)
-    | Ui.Event.MouseDown { x; y; _ } ->
-        Some (Msg.Click (x, y))
-    | _ ->
-        None
-  in
 
   let initial_model =
     {
@@ -169,9 +165,9 @@ let run () =
   in
 
   let window =
-    Ui.Window.make ~width:800 ~height:600 ~title:"Animation Demo" ()
+    Window.make ~width:800 ~height:600 ~title:"Animation Demo" ()
   in
-  Ui.run ~window ~handle_event ~model:initial_model ~update ~view ()
+  run ~window ~subscriptions ~init:initial_model ~update ~view ()
 
 let () =
   match run () with

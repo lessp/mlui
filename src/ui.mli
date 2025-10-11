@@ -1,116 +1,9 @@
-module Position : sig
-  type t = { x : int; y : int }
-  val make : x:int -> y:int -> t
-end
-
-module Window : sig
-  type t = { width : int; height : int; title : string }
-  val make : width:int -> height:int -> ?title:string -> unit -> t
-end
-
-module Color : sig
-  type t = { r : int; g : int; b : int; a : int }
-
-  val make : r:int -> g:int -> b:int -> ?a:int -> unit -> t
-
-  val transparent : t
-  val black : t
-  val white : t
-  val gray : t
-  val light_gray : t
-  val dark_gray : t
-  val red : t
-  val green : t
-  val blue : t
-  val yellow : t
-  val cyan : t
-  val magenta : t
-end
-
-(* Flexbox layout types *)
-type flex_direction = Row | Column | RowReverse | ColumnReverse
-type justify_content =
-  | FlexStart
-  | Center
-  | FlexEnd
-  | SpaceBetween
-  | SpaceAround
-type align_items = Stretch | Start | Center | End
-
-(* Position types *)
-type position_type = Relative | Absolute
-
-(* Transform types *)
-type transform =
-  | Translate of { x : float; y : float }
-  | Scale of { x : float; y : float }
-  | Rotate of float
-  | Compose of transform list
-
-(* New component-oriented Style system *)
-module Style : sig
-  type t = {
-    background_color : Color.t option;
-    border_color : Color.t option;
-    border_width : float option;
-    border_radius : float option;
-    text_color : Color.t option;
-    font_size : float option;
-    padding : int option;
-    margin : int option;
-    width : int option;
-    height : int option;
-    position_type : position_type option;
-    position_x : int option;
-    position_y : int option;
-    (* Flexbox properties *)
-    flex_direction : flex_direction option;
-    justify_content : justify_content option;
-    align_items : align_items option;
-    flex_grow : float option;
-    flex_shrink : float option;
-    flex_basis : float option;
-    transform : transform option;
-  }
-
-  val default : t
-
-  val with_background : Color.t -> t -> t
-  val with_border : color:Color.t -> width:float -> t -> t
-  val with_border_radius : float -> t -> t
-  val with_text_color : Color.t -> t -> t
-  val with_font_size : float -> t -> t
-  val with_padding : int -> t -> t
-  val with_size : ?width:int -> ?height:int -> t -> t
-  val with_position : x:int -> y:int -> t -> t
-  val with_flex_direction : flex_direction -> t -> t
-  val with_justify_content : justify_content -> t -> t
-  val with_align_items : align_items -> t -> t
-  val with_flex_grow : float -> t -> t
-  val with_flex_shrink : float -> t -> t
-  val with_flex_basis : float -> t -> t
-  val with_position_type : position_type -> t -> t
-  val with_transform : transform -> t -> t
-end
-
-type bounds = { x : float; y : float; width : float; height : float }
-
-(* Event types *)
-module Event : sig
-  type mouse_button = Left | Middle | Right
-
-  type t =
-    | Quit
-    | AnimationFrame of float (* delta time in seconds *)
-    | MouseDown of { x : int; y : int; button : mouse_button }
-    | MouseUp of { x : int; y : int; button : mouse_button }
-    | MouseMove of { x : int; y : int }
-    | MouseEnter of { x : int; y : int }
-    | MouseLeave of { x : int; y : int }
-    | KeyUp of string
-end
+(* Color, Window, Style, Cmd, Event are now separate modules *)
+(* They are not nested under Ui - use them via Mlui *)
 
 (* GADT-based UI system with clear separation *)
+
+type bounds = { x : float; y : float; width : float; height : float }
 
 (* Primitive rendering types - no interaction, just visual *)
 type primitive_style =
@@ -237,16 +130,29 @@ val fill : Color.t -> primitive_style
 val stroke : Color.t -> float -> primitive_style
 val fill_and_stroke : Color.t -> Color.t -> float -> primitive_style
 
-type 'msg event_handler = Event.t -> 'msg option
+
 
 val run :
   window:Window.t ->
-  ?handle_event:'msg event_handler ->
-  model:'model ->
-  update:('msg -> 'model -> 'model) ->
+  ?subscriptions:('model -> 'msg Subscription.t) ->
+  init:'model ->
+  update:('msg -> 'model -> 'model * Cmd.t) ->
   view:('model -> 'msg node) ->
   unit ->
   (unit, [ `Msg of string ]) result
+(** Run the UI application.
+
+    Example:
+    {[
+      let subscriptions model =
+        Sub.batch [
+          Sub.on_animation_frame (fun dt -> Msg.Tick dt);
+          Sub.on_key_down (fun key -> Msg.KeyPressed key);
+        ]
+
+      Mlui.run ~window ~subscriptions ~init ~update ~view ()
+    ]}
+*)
 
 (* MLX/JSX-compatible constructors *)
 module Mlx : sig

@@ -50,9 +50,8 @@ let view (_ : unit) : unit Ui.node =
     ]
 
 let run () =
-  let handle_event _ = None in
   let window = Ui.Window.make ~width:1024 ~height:768 ~title:"Flex Demo" () in
-  Ui.run ~window ~handle_event ~model:() ~update:(fun _ model -> model) ~view ()
+  Ui.run ~window ~init:() ~update:(fun _ model -> model) ~view ()
 
 let () =
   match run () with

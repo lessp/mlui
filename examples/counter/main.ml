@@ -26,15 +26,15 @@ let lighten_color (color : Ui.Color.t) delta : Ui.Color.t =
 let update msg (model : Model.t) =
   match msg with
   | Msg.Increment ->
-      { model with Model.counter = model.counter + 1 }
+      ({ model with Model.counter = model.counter + 1 }, Ui.Cmd.none)
   | Msg.Decrement ->
-      { model with Model.counter = model.counter - 1 }
+      ({ model with Model.counter = model.counter - 1 }, Ui.Cmd.none)
   | Msg.Reset ->
-      { model with Model.counter = 0 }
+      ({ model with Model.counter = 0 }, Ui.Cmd.none)
   | Msg.SetColor color ->
-      { model with Model.bg_color = color }
+      ({ model with Model.bg_color = color }, Ui.Cmd.none)
   | Msg.SetHover hovered ->
-      { model with Model.hovered }
+      ({ model with Model.hovered }, Ui.Cmd.none)
 
 module Styles = struct
   open Ui
@@ -146,11 +146,12 @@ let view (model : Model.t) : Msg.t Ui.node =
                  []));
     ]
 
-let run () =
-  let handle_event = function Ui.Event.Quit -> Some Msg.Reset | _ -> None in
+let subscriptions _model =
+  Sub.on_quit Msg.Reset
 
+let run () =
   let window = Ui.Window.make ~width:800 ~height:600 ~title:"Counter" () in
-  Ui.run ~window ~handle_event ~model:(Model.init ()) ~update ~view ()
+  Ui.run ~window ~subscriptions ~init:(Model.init ()) ~update ~view ()
 
 let () =
   match run () with

@@ -16,7 +16,7 @@ let position_animation =
        ~interpolate:Animation.Interpolate.float
 
 let update (Msg.Tick delta) model =
-  { current_time = model.current_time +. delta }
+  ({ current_time = model.current_time +. delta }, Ui.Cmd.none)
 
 let view model =
   let x = Animation.value_at ~time:model.current_time position_animation in
@@ -38,18 +38,14 @@ let view model =
         [];
     ]
 
-let run () =
-  let handle_event = function
-    | Ui.Event.AnimationFrame delta ->
-        Some (Msg.Tick delta)
-    | _ ->
-        None
-  in
+let subscriptions _model =
+  Sub.on_animation_frame (fun delta -> Msg.Tick delta)
 
+let run () =
   let window =
     Ui.Window.make ~width:600 ~height:400 ~title:"Simple Loop Animation" ()
   in
-  Ui.run ~window ~handle_event ~model:{ current_time = 0.0 } ~update ~view ()
+  Ui.run ~window ~subscriptions ~init:{ current_time = 0.0 } ~update ~view ()
 
 let () =
   match run () with

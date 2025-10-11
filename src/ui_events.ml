@@ -50,7 +50,7 @@ let rec find_node_by_path (path : path)
       | None ->
           None)
 
-let handle_node_event_with_bounds (event : Event.t)
+let handle_node_event_with_bounds (event : Ui_event.t)
     (node : 'msg interactive_node) (bounds : bounds) : 'msg option =
   let transform_coords x y =
     let rel_x = float_of_int x -. bounds.x in
@@ -58,33 +58,33 @@ let handle_node_event_with_bounds (event : Event.t)
     (int_of_float rel_x, int_of_float rel_y)
   in
   match (event, node) with
-  | ( Event.MouseDown { button = Event.Left; _ },
+  | ( Ui_event.MouseDown { button = Ui_event.Left; _ },
       View { on_click = Some handler; _ } ) ->
       handler ()
-  | Event.MouseDown { x; y; _ }, View { on_mouse_down = Some handler; _ }
-  | Event.MouseUp { x; y; _ }, View { on_mouse_up = Some handler; _ }
-  | Event.MouseMove { x; y }, View { on_mouse_move = Some handler; _ }
-  | Event.MouseEnter { x; y }, View { on_mouse_enter = Some handler; _ }
-  | Event.MouseLeave { x; y }, View { on_mouse_leave = Some handler; _ }
-  | Event.MouseDown { x; y; _ }, Canvas { on_mouse_down = Some handler; _ }
-  | Event.MouseUp { x; y; _ }, Canvas { on_mouse_up = Some handler; _ }
-  | Event.MouseMove { x; y }, Canvas { on_mouse_move = Some handler; _ }
-  | Event.MouseEnter { x; y }, Canvas { on_mouse_enter = Some handler; _ }
-  | Event.MouseLeave { x; y }, Canvas { on_mouse_leave = Some handler; _ } ->
+  | Ui_event.MouseDown { x; y; _ }, View { on_mouse_down = Some handler; _ }
+  | Ui_event.MouseUp { x; y; _ }, View { on_mouse_up = Some handler; _ }
+  | Ui_event.MouseMove { x; y }, View { on_mouse_move = Some handler; _ }
+  | Ui_event.MouseEnter { x; y }, View { on_mouse_enter = Some handler; _ }
+  | Ui_event.MouseLeave { x; y }, View { on_mouse_leave = Some handler; _ }
+  | Ui_event.MouseDown { x; y; _ }, Canvas { on_mouse_down = Some handler; _ }
+  | Ui_event.MouseUp { x; y; _ }, Canvas { on_mouse_up = Some handler; _ }
+  | Ui_event.MouseMove { x; y }, Canvas { on_mouse_move = Some handler; _ }
+  | Ui_event.MouseEnter { x; y }, Canvas { on_mouse_enter = Some handler; _ }
+  | Ui_event.MouseLeave { x; y }, Canvas { on_mouse_leave = Some handler; _ } ->
       let rel_x, rel_y = transform_coords x y in
       handler (rel_x, rel_y)
-  | ( Event.MouseDown { button = Event.Left; _ },
+  | ( Ui_event.MouseDown { button = Ui_event.Left; _ },
       Canvas { on_click = Some handler; _ } ) ->
       handler ()
-  | ( Event.MouseDown { button = Event.Left; _ },
+  | ( Ui_event.MouseDown { button = Ui_event.Left; _ },
       Text { on_click = Some handler; _ } ) ->
       handler ()
   | _ ->
       None
 
-let handle_mouse_motion ~tree ~hovered_path ~dispatch_to_node (move : Event.t) =
+let handle_mouse_motion ~tree ~hovered_path ~dispatch_to_node (move : Ui_event.t) =
   match move with
-  | Event.MouseMove { x; y } ->
+  | Ui_event.MouseMove { x; y } ->
       let pos = Position.make ~x ~y in
       let current_node = find_node_at_position pos tree in
       let handled = ref false in
@@ -99,7 +99,7 @@ let handle_mouse_motion ~tree ~hovered_path ~dispatch_to_node (move : Event.t) =
           | _ -> (
               match find_node_by_path prev_path tree with
               | Some prev_node ->
-                  dispatch (Event.MouseLeave { x; y }) prev_node;
+                  dispatch (Ui_event.MouseLeave { x; y }) prev_node;
                   hovered_path := None
               | None ->
                   hovered_path := None))
@@ -108,7 +108,7 @@ let handle_mouse_motion ~tree ~hovered_path ~dispatch_to_node (move : Event.t) =
       (match current_node with
       | Some node ->
           if Some node.path <> !hovered_path then
-            dispatch (Event.MouseEnter { x; y }) node;
+            dispatch (Ui_event.MouseEnter { x; y }) node;
           hovered_path := Some node.path;
           dispatch move node
       | None ->

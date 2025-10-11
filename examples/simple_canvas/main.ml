@@ -35,9 +35,8 @@ let view (_ : model) : msg Ui.node =
     ]
 
 let run () =
-  let handle_event _ = None in
   let window = Ui.Window.make ~width:400 ~height:300 () in
-  Ui.run ~window ~handle_event ~model:(init ()) ~update ~view ()
+  Ui.run ~window ~init:(init ()) ~update ~view ()
 
 let () =
   match run () with

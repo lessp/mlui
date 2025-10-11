@@ -1,11 +1,70 @@
-module Ui = Ui
+(** MLui - A declarative UI framework for OCaml using The Elm Architecture *)
+
+(** {1 Core Modules} *)
+
+module Style = Style
+module Color = Color
+module Window = Window
+module Cmd = Cmd
+module Sub = Subscription
+module Tray = Tray
 module Animation = Animation
+module Cocoa = Cocoa_hello
+
+(** {1 UI Construction} *)
+
+type 'msg node = 'msg Ui.node
+
+val view :
+  ?style:Style.t ->
+  ?key:string ->
+  ?on_click:(unit -> 'msg option) ->
+  ?on_mouse_down:(int * int -> 'msg option) ->
+  ?on_mouse_up:(int * int -> 'msg option) ->
+  ?on_mouse_move:(int * int -> 'msg option) ->
+  ?on_mouse_enter:(int * int -> 'msg option) ->
+  ?on_mouse_leave:(int * int -> 'msg option) ->
+  'msg node list ->
+  'msg node
+
+val text :
+  ?style:Style.t ->
+  ?key:string ->
+  ?on_click:(unit -> 'msg option) ->
+  string ->
+  'msg node
+
+val map_msg : ('a -> 'b) -> 'a node -> 'b node
+
+(** {1 Application Runtime} *)
 
 val run :
-  window:Ui.Window.t ->
-  ?handle_event:'msg Ui.event_handler ->
-  model:'model ->
-  update:('msg -> 'model -> 'model) ->
-  view:('model -> 'msg Ui.node) ->
+  window:Window.t ->
+  ?subscriptions:('model -> 'msg Sub.t) ->
+  init:'model ->
+  update:('msg -> 'model -> 'model * Cmd.t) ->
+  view:('model -> 'msg node) ->
   unit ->
   (unit, [ `Msg of string ]) result
+(** Run the UI application.
+
+    Example:
+    {[
+      open Mlui
+
+      let subscriptions model =
+        Sub.batch [
+          Sub.on_animation_frame (fun dt -> Msg.Tick dt);
+          Sub.on_key_down (fun key -> Msg.KeyPressed key);
+        ]
+
+      let update msg model =
+        match msg with
+        | Msg.Tick dt -> ({ model with time = model.time +. dt }, Cmd.none)
+        | Msg.KeyPressed key -> (model, Cmd.none)
+
+      let () =
+        let window = Window.make ~width:800 ~height:600 ~title:"My App" () in
+        run ~window ~subscriptions ~init:(Model.init ()) ~update ~view ()
+    ]}
+*)

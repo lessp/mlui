@@ -1,0 +1,9 @@
+(executable
+ (public_name native_tray)
+ (name tray)
+ (libraries mlui))
+
+(executable
+ (public_name native_alert)
+ (name alert)
+ (libraries mlui))

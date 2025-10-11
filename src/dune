@@ -3,4 +3,24 @@
 (library
  (name mlui)
  (wrapped false)
- (libraries tsdl tgls.tgles2 wall flex))
+ (libraries tsdl tgls.tgles2 wall flex)
+ (foreign_stubs
+  (language c)
+  (names cocoa_hello tray)
+  (flags (:standard (:include c_flags.txt)))
+  (include_dirs))
+ (c_library_flags
+  (:standard
+   (:include c_library_flags.txt))))
+
+(rule
+ (target c_flags.txt)
+ (action
+  (with-stdout-to %{target}
+   (system "case $(uname) in Darwin) echo '(-x objective-c)';; *) echo '()';; esac"))))
+
+(rule
+ (target c_library_flags.txt)
+ (action
+  (with-stdout-to %{target}
+   (system "case $(uname) in Darwin) echo '(-framework Cocoa)';; *) echo '()';; esac"))))

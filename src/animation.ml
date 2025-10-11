@@ -78,9 +78,9 @@ module Interpolate = struct
   let position (ax, ay) (bx, by) (t : float) : float * float =
     (float ax bx t, float ay by t)
 
-  let color (a : Ui_types.Color.t) (b : Ui_types.Color.t) (t : float) :
-      Ui_types.Color.t =
-    Ui_types.Color.make ~r:(int a.r b.r t) ~g:(int a.g b.g t) ~b:(int a.b b.b t)
+  let color (a : Color.t) (b : Color.t) (t : float) :
+      Color.t =
+    Color.make ~r:(int a.r b.r t) ~g:(int a.g b.g t) ~b:(int a.b b.b t)
       ~a:(int a.a b.a t) ()
 end
 

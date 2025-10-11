@@ -145,6 +145,13 @@ module Renderer = struct
     primitives |> List.map render_primitive_node |> Wall.Image.seq
 
   let render_view ?(fps = 0.0) state node () =
+    (* Clear screen by rendering a full-screen background *)
+    let clear_background =
+      Wall.Image.paint
+        (Wall.Paint.color (Wall.Color.v 0.0 0.0 0.0 1.0))
+        (Wall.Image.fill_path (fun ctx ->
+            Wall.Path.rect ctx ~x:0.0 ~y:0.0 ~w:state.width ~h:state.height))
+    in
     let scene = render_node ~x:0 ~y:0 node in
     let fps_text =
       if fps > 0.0 then
@@ -161,13 +168,20 @@ module Renderer = struct
       else
         Wall.Image.empty
     in
-    let final_scene = Wall.Image.seq [ scene; fps_text ] in
+    let final_scene = Wall.Image.seq [ clear_background; scene; fps_text ] in
     Wall.Renderer.render state.wall_renderer ~width:state.width
       ~height:state.height
       ~performance_counter:(Wall.Performance_counter.make ())
       final_scene
 
   let render_view_with_primitives ?(fps = 0.0) state primitives () =
+    (* Clear screen by rendering a full-screen background *)
+    let clear_background =
+      Wall.Image.paint
+        (Wall.Paint.color (Wall.Color.v 0.0 0.0 0.0 1.0))
+        (Wall.Image.fill_path (fun ctx ->
+            Wall.Path.rect ctx ~x:0.0 ~y:0.0 ~w:state.width ~h:state.height))
+    in
     let scene = render_primitives_list primitives in
     let fps_text =
       if fps > 0.0 then
@@ -184,7 +198,7 @@ module Renderer = struct
       else
         Wall.Image.empty
     in
-    let final_scene = Wall.Image.seq [ scene; fps_text ] in
+    let final_scene = Wall.Image.seq [ clear_background; scene; fps_text ] in
     Wall.Renderer.render state.wall_renderer ~width:state.width
       ~height:state.height
       ~performance_counter:(Wall.Performance_counter.make ())

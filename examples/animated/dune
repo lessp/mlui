@@ -1,5 +1,9 @@
 (executable
- (name ball_demo)
+ (name ball)
+ (libraries mlui))
+
+(executable
+ (name ball_demo_view)
  (libraries mlui))
 
 (executable

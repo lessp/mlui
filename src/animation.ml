@@ -197,3 +197,49 @@ module Easing = struct
       /. 2.0
       +. 1.0
 end
+
+(* Helper for managing animated values with less boilerplate *)
+module Animated = struct
+  type 'a state = {
+    current : 'a;
+    target : 'a;
+    animation : 'a t option;
+    start_time : float;
+    duration : float;
+  }
+
+  let make initial = {
+    current = initial;
+    target = initial;
+    animation = None;
+    start_time = 0.0;
+    duration = 0.0;
+  }
+
+  let set_target ?(duration = 0.3) ?(easing = Easing.ease_out_cubic) ~interpolate target current_time state =
+    let animation =
+      animate ~duration
+      |> ease easing
+      |> tween ~from:state.current ~to_:target ~interpolate
+    in
+    {
+      current = state.current;
+      target;
+      animation = Some animation;
+      start_time = current_time;
+      duration;
+    }
+
+  let step current_time state =
+    match state.animation with
+    | None -> state
+    | Some anim ->
+        let elapsed = current_time -. state.start_time in
+        let value = anim elapsed in
+        if elapsed >= state.duration then
+          { state with current = state.target; animation = None }
+        else
+          { state with current = value }
+
+  let value state = state.current
+end

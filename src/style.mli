@@ -21,7 +21,10 @@ type position_type = Relative | Absolute
 
 type transform =
   | Translate of { x : float; y : float }
+  | TranslateX of float  (** Translate along X-axis only *)
+  | TranslateY of float  (** Translate along Y-axis only *)
   | Scale of { x : float; y : float }
+  | ScaleUniform of float  (** Scale both axes equally *)
   | Rotate of float
   | Compose of transform list
 (** Transform operations for visual effects *)

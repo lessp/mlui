@@ -16,7 +16,10 @@ type position_type = Relative | Absolute
 
 type transform =
   | Translate of { x : float; y : float }
+  | TranslateX of float
+  | TranslateY of float
   | Scale of { x : float; y : float }
+  | ScaleUniform of float
   | Rotate of float
   | Compose of transform list
 

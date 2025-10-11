@@ -189,12 +189,20 @@ module FlexIntegrationImpl = struct
     match transform_opt with
     | Some (Translate { x; y }) ->
         (x, y)
+    | Some (TranslateX x) ->
+        (x, 0.0)
+    | Some (TranslateY y) ->
+        (0.0, y)
     | Some (Compose transforms) ->
         List.fold_left
           (fun (acc_x, acc_y) t ->
             match t with
             | Translate { x; y } ->
                 (acc_x +. x, acc_y +. y)
+            | TranslateX x ->
+                (acc_x +. x, acc_y)
+            | TranslateY y ->
+                (acc_x, acc_y +. y)
             | _ ->
                 (acc_x, acc_y))
           (0.0, 0.0) transforms
@@ -675,6 +683,10 @@ module FlexIntegrationImpl = struct
       match style.transform with
       | Some (Translate { x; y }) ->
           (x, y)
+      | Some (TranslateX x) ->
+          (x, 0.0)
+      | Some (TranslateY y) ->
+          (0.0, y)
       | Some (Compose transforms) ->
           (* For now, just accumulate translations from composed transforms *)
           List.fold_left
@@ -682,6 +694,10 @@ module FlexIntegrationImpl = struct
               match t with
               | Translate { x; y } ->
                   (acc_x +. x, acc_y +. y)
+              | TranslateX x ->
+                  (acc_x +. x, acc_y)
+              | TranslateY y ->
+                  (acc_x, acc_y +. y)
               | _ ->
                   (acc_x, acc_y))
             (0.0, 0.0) transforms

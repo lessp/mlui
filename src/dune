@@ -7,7 +7,9 @@
  (foreign_stubs
   (language c)
   (names cocoa_hello tray)
-  (flags (:standard (:include c_flags.txt)))
+  (flags
+   (:standard
+    (:include c_flags.txt)))
   (include_dirs))
  (c_library_flags
   (:standard
@@ -16,11 +18,15 @@
 (rule
  (target c_flags.txt)
  (action
-  (with-stdout-to %{target}
-   (system "case $(uname) in Darwin) echo '(-x objective-c)';; *) echo '()';; esac"))))
+  (with-stdout-to
+   %{target}
+   (system
+    "case $(uname) in Darwin) echo '(-x objective-c)';; *) echo '()';; esac"))))
 
 (rule
  (target c_library_flags.txt)
  (action
-  (with-stdout-to %{target}
-   (system "case $(uname) in Darwin) echo '(-framework Cocoa)';; *) echo '()';; esac"))))
+  (with-stdout-to
+   %{target}
+   (system
+    "case $(uname) in Darwin) echo '(-framework Cocoa)';; *) echo '()';; esac"))))

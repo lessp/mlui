@@ -138,3 +138,70 @@ module Easing : sig
   val ease_out_elastic : t
   val ease_in_out_elastic : t
 end
+
+(** {1 Animated Value Helper}
+
+    Helper module to manage animated values with less boilerplate.
+
+    Example:
+    {[
+      type model = {
+        position : (float * float) Animation.Animated.state;
+        current_time : float;
+      }
+
+      (* Initialize *)
+      let init = {
+        position = Animation.Animated.make (0.0, 0.0);
+        current_time = 0.0;
+      }
+
+      (* Update on mouse move *)
+      let on_click x y model =
+        let new_pos =
+          Animation.Animated.set_target
+            ~duration:0.3
+            ~easing:Animation.Easing.ease_out_cubic
+            ~interpolate:Animation.Interpolate.position
+            (float_of_int x, float_of_int y)
+            model.current_time
+            model.position
+        in
+        { model with position = new_pos }
+
+      (* Step animation each frame *)
+      let on_tick dt model =
+        let new_time = model.current_time +. dt in
+        let new_pos = Animation.Animated.step new_time model.position in
+        { position = new_pos; current_time = new_time }
+
+      (* Get current value *)
+      let x, y = Animation.Animated.value model.position in
+    ]}
+*)
+module Animated : sig
+  type 'a state
+  (** State for an animated value, tracking current value, target, and animation *)
+
+  val make : 'a -> 'a state
+  (** Create a new animated value at the initial position *)
+
+  val set_target :
+    ?duration:float ->
+    ?easing:(float -> float) ->
+    interpolate:('a -> 'a -> float -> 'a) ->
+    'a ->
+    float ->
+    'a state ->
+    'a state
+  (** Set a new target and start animating towards it.
+      [set_target ~duration ~easing ~interpolate target current_time state]
+      starts a new animation from the current value to [target].
+      Default duration is 0.3s, default easing is ease_out_cubic. *)
+
+  val step : float -> 'a state -> 'a state
+  (** Step the animation forward to the given time *)
+
+  val value : 'a state -> 'a
+  (** Get the current value *)
+end

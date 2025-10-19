@@ -1,0 +1,17 @@
+(version 1.23.1)
+
+(build
+ (progn
+  (when
+   %{pkg-self:dev}
+   (run dune subst))
+  (run dune build -p %{pkg-self:name} -j %{jobs} @install)))
+
+(depends dune jsonrpc yojson ppx_yojson_conv_lib uutf ocaml)
+
+(source
+ (fetch
+  (url
+   https://github.com/ocaml/ocaml-lsp/releases/download/1.23.1/lsp-1.23.1.tbz)
+  (checksum
+   sha256=c747e394026639ea204467e859de93ea8e9958dbf44f780dcb2a1897c56d7571)))

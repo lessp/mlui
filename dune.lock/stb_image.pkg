@@ -1,0 +1,14 @@
+(version 0.5)
+
+(install
+ (run %{make} install))
+
+(build
+ (run %{make}))
+
+(depends ocaml ocamlfind result)
+
+(source
+ (fetch
+  (url https://github.com/let-def/stb_image/archive/v0.5.tar.gz)
+  (checksum md5=b4382fe112cadd240972f07547138a2d)))

@@ -1,152 +1,101 @@
 open Mlui
 
-type button = Increment | Decrement | Reset
-
 module Msg = struct
   type t =
     | Increment
     | Decrement
     | Reset
-    | SetColor of Color.t
-    | SetHover of button option
 end
 
 module Model = struct
-  type t = { counter : int; bg_color : Color.t; hovered : button option }
+  type t = {
+    counter : int;
+  }
 
-  let init () = { counter = 0; bg_color = Color.gray; hovered = None }
+  let init () = {
+    counter = 0;
+  }
 end
 
-let lighten_color (color : Color.t) delta : Color.t =
-  let open Color in
-  let clamp v = max 0 (min 255 v) in
-  let { r; g; b; a } = color in
-  { r = clamp (r + delta); g = clamp (g + delta); b = clamp (b + delta); a }
-
-let update msg (model : Model.t) =
+let update (msg: Msg.t) (model: Model.t): (Model.t * Cmd.t) =
   match msg with
   | Msg.Increment ->
-      ({ model with Model.counter = model.counter + 1 }, Cmd.none)
+      ({ counter = model.counter + 1 }, Cmd.none)
   | Msg.Decrement ->
-      ({ model with Model.counter = model.counter - 1 }, Cmd.none)
+      ({ counter = model.counter - 1 }, Cmd.none)
   | Msg.Reset ->
-      ({ model with Model.counter = 0 }, Cmd.none)
-  | Msg.SetColor color ->
-      ({ model with Model.bg_color = color }, Cmd.none)
-  | Msg.SetHover hovered ->
-      ({ model with Model.hovered }, Cmd.none)
+      ({ counter = 0 }, Cmd.none)
 
 module Styles = struct
-  open Mlui
+  let container =
+    Style.(
+          default
+          |> with_flex_grow 1.0
+          |> with_flex_direction Column
+          |> with_justify_content Center
+          |> with_align_items Center)
 
-  let container background =
-    Style.default |> Style.with_flex_grow 1.0
-    |> Style.with_flex_direction Column
-    |> Style.with_justify_content Center
-    |> Style.with_align_items Center
-    |> Style.with_background background
-    |> Style.with_padding 20
+  let counter =
+    Style.(
+          default
+          |> with_flex_direction Column
+          |> with_justify_content Center
+          |> with_align_items Center
+          |> with_padding 20)
 
-  let counter_text =
-    Style.default
-    |> Style.with_text_color Color.black
-    |> Style.with_font_size 32.0 |> Style.with_padding 20
+  let text = Style.(
+    default
+    |> with_font_size 18.0
+    |> with_text_color Color.white)
 
-  let button ~hovered base_color =
-    Style.default |> Style.with_padding 15
-    |> Style.with_background
-         (if hovered then
-            lighten_color base_color 40
-          else
-            base_color)
-    |> Style.with_justify_content Center
-    |> Style.with_align_items Center
+  let button_container =
+    Style.(
+          default
+          |> with_flex_direction Row
+          |> with_justify_content Center
+          |> with_align_items Center
+          |> with_padding 10)
 
-  let button_row =
-    Style.default |> Style.with_flex_direction Row |> Style.with_padding 10
-
-  let spacer = Style.default |> Style.with_padding 5
-
-  let palette_row =
-    Style.default |> Style.with_flex_direction Row |> Style.with_padding 20
-
-  let palette_option color =
-    Style.default |> Style.with_padding 20 |> Style.with_background color
+  let button =
+    Style.(
+          default
+          |> with_flex_direction Column
+          |> with_justify_content Center
+          |> with_align_items Center
+          |> with_background Color.blue
+          |> with_padding 15
+          |> with_size ~width:120 ~height:50)
 end
 
-let view (model : Model.t) : Msg.t Mlui.node =
-  let hovered button =
-    match model.hovered with Some btn when btn = button -> true | _ -> false
-  in
-
+let view (model : Model.t) =
   view
-    ~style:(Styles.container model.bg_color)
+    ~style:Styles.container
     [
-      text ~style:Styles.counter_text (Printf.sprintf "Count: %d" model.counter);
-      view ~style:Styles.button_row
-        [
-          view
-            ~style:
-              (Styles.button ~hovered:(hovered Decrement)
-                 (Color.make ~r:100 ~g:100 ~b:255 ()))
-            ~on_click:(fun () -> Some Msg.Decrement)
-            ~on_mouse_enter:(fun _ -> Some (Msg.SetHover (Some Decrement)))
-            ~on_mouse_leave:(fun _ -> Some (Msg.SetHover None))
-            [
-              text
-                ~style:
-                  (Style.default
-                  |> Style.with_text_color (Color.make ~r:255 ~g:255 ~b:255 ())
-                  |> Style.with_font_size 24.0)
-                " - ";
-            ];
-          view ~style:Styles.spacer [];
-          view
-            ~style:
-              (Styles.button ~hovered:(hovered Increment)
-                 (Color.make ~r:100 ~g:100 ~b:255 ()))
-            ~on_click:(fun () -> Some Msg.Increment)
-            ~on_mouse_enter:(fun _ -> Some (Msg.SetHover (Some Increment)))
-            ~on_mouse_leave:(fun _ -> Some (Msg.SetHover None))
-            [
-              text
-                ~style:
-                  (Style.default
-                  |> Style.with_text_color (Color.make ~r:255 ~g:255 ~b:255 ())
-                  |> Style.with_font_size 24.0)
-                " + ";
-            ];
-          view ~style:Styles.spacer [];
-          view
-            ~style:
-              (Styles.button ~hovered:(hovered Reset)
-                 (Color.make ~r:200 ~g:100 ~b:100 ()))
-            ~on_click:(fun () -> Some Msg.Reset)
-            ~on_mouse_enter:(fun _ -> Some (Msg.SetHover (Some Reset)))
-            ~on_mouse_leave:(fun _ -> Some (Msg.SetHover None))
-            [
-              text
-                ~style:
-                  (Style.default
-                  |> Style.with_text_color (Color.make ~r:255 ~g:255 ~b:255 ())
-                  |> Style.with_font_size 18.0)
-                "Reset";
-            ];
+
+      view ~style:Styles.counter [
+        text ~style:Styles.text (Printf.sprintf "Count: %d" model.counter);
+      ];
+
+      view ~style:Styles.button_container [
+        view ~style:Styles.button ~on_click:(fun () -> Some Msg.Increment) [
+          text ~style:Styles.text "Increment"
         ];
-      view ~style:Styles.palette_row
-        ([ Color.green; Color.yellow; Color.magenta; Color.blue ]
-        |> List.map (fun color ->
-               view
-                 ~style:(Styles.palette_option color)
-                 ~on_click:(fun () -> Some (Msg.SetColor color))
-                 []));
+
+        view ~style:Styles.button ~on_click:(fun () -> Some Msg.Decrement) [
+          text ~style:Styles.text "Decrement"
+        ];
+
+        view ~style:Styles.button ~on_click:(fun () -> Some Msg.Reset) [
+          text ~style:Styles.text "Reset"
+        ]
+      ]
     ]
 
 let subscriptions _model = Sub.on_quit Msg.Reset
 
 let run () =
   let window = Window.make ~width:800 ~height:600 ~title:"Counter" () in
-  Mlui.run ~window ~subscriptions ~init:(Model.init ()) ~update ~view ()
+  run ~window ~subscriptions ~init:(Model.init ()) ~update ~view ()
 
 let () =
   match run () with

@@ -10,7 +10,7 @@ homepage: "https://github.com/lessp/mlpaint"
 doc: "https://url/to/documentation"
 bug-reports: "https://github.com/lessp/mlpaint/issues"
 depends: [
-  "dune" {>= "3.21"}
+  "dune" {>= "3.20"}
   "ocaml"
   "tsdl"
   "ocaml-lsp-server"

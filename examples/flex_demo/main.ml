@@ -1,8 +1,6 @@
 open Mlui
 
 module Styles = struct
-  open Mlui
-
   let root =
     Style.default
     |> Style.with_background Color.light_gray

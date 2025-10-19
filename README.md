@@ -1,4 +1,4 @@
-> **⚠️ Experimental**: This is a learning project and research prototype. Expect rough edges, incomplete features, and API changes. Not recommended for production use.
+> **⚠️ Experimental**: 50% vibes. Use at own risk. Contributions welcome!
 
 # Mlui
 
@@ -21,87 +21,124 @@ Run any example, e.g.
 ```
 
 
-### macOS
+### Prerequisites
+
+#### macOS
 
 ```
 brew install sdl2
 brew install sdl2_ttf
 ```
 
-## Examples
-
-### Paint (`examples/paint/`)
-
-Full-featured painting application with:
-- Multiple drawing tools (pencil, brush, shapes, eraser)
-- Color palette with foreground/background colors
-- Tool variants (fill styles, thicknesses)
-- Canvas with immediate visual feedback
-
-Run with:
-```bash
-dune exec paint
-```
-
-### Simple Draw (`examples/simple_draw/`)
-
-Minimalist drawing application demonstrating:
-- Canvas event handlers
-- Path drawing with mouse/pointer events
-- Color and size selection
-- Clear functionality
-
-Run with:
-```bash
-dune exec simple-draw
-```
-
-### Flex Demo (`examples/flex_demo/`)
-
-Shows basic Flexbox layout behaviour.
-
-```bash
-dune exec flex_demo
-```
-
-### Counter (`examples/counter/`)
-
-Simple counter demonstrating The Elm Architecture:
-- Button click handlers
-- State management
-- Message-based updates
-- Dynamic styling
-
-Run with:
-```bash
-dune exec counter
-```
-
-## Using the Library
+## Using the library
 
 ```ocaml
 open Mlui
 
 module Msg = struct
-  type t = Click | Hover of int * int
+  type t =
+    | Increment
+    | Decrement
+    | Reset
 end
 
-let view model =
-  Ui.view ~on_click:(fun () -> Some Msg.Click) [
-    Ui.text "Click me!"
-  ]
+module Model = struct
+  type t = {
+    counter : int;
+  }
 
-let update msg model =
+  let init () = {
+    counter = 0;
+  }
+end
+
+let update (msg: Msg.t) (model: Model.t): (Model.t * Cmd.t) =
   match msg with
-  | Msg.Click -> { model with clicked = true }
-  | Msg.Hover (x, y) -> { model with position = (x, y) }
+  | Msg.Increment ->
+      ({ counter = model.counter + 1 }, Cmd.none)
+  | Msg.Decrement ->
+      ({ counter = model.counter - 1 }, Cmd.none)
+  | Msg.Reset ->
+      ({ counter = 0 }, Cmd.none)
 
-let window = Ui.Window.make ~width:800 ~height:600
+module Styles = struct
+  let container =
+    Style.(
+          default
+          |> with_flex_grow 1.0
+          |> with_flex_direction Column
+          |> with_justify_content Center
+          |> with_align_items Center)
+
+  let counter =
+    Style.(
+          default
+          |> with_flex_direction Column
+          |> with_justify_content Center
+          |> with_align_items Center
+          |> with_padding 20)
+
+  let text = Style.(
+    default
+    |> with_font_size 18.0
+    |> with_text_color Color.white)
+
+  let button_container =
+    Style.(
+          default
+          |> with_flex_direction Row
+          |> with_justify_content Center
+          |> with_align_items Center
+          |> with_padding 10)
+
+  let button =
+    Style.(
+          default
+          |> with_flex_direction Column
+          |> with_justify_content Center
+          |> with_align_items Center
+          |> with_background Color.blue
+          |> with_padding 15
+          |> with_size ~width:120 ~height:50)
+end
+
+let view (model : Model.t) =
+  view
+    ~style:Styles.container
+    [
+
+      view ~style:Styles.counter [
+        text ~style:Styles.text (Printf.sprintf "Count: %d" model.counter);
+      ];
+
+      view ~style:Styles.button_container [
+        view ~style:Styles.button ~on_click:(fun () -> Some Msg.Increment) [
+          text ~style:Styles.text "Increment"
+        ];
+
+        view ~style:Styles.button ~on_click:(fun () -> Some Msg.Decrement) [
+          text ~style:Styles.text "Decrement"
+        ];
+
+        view ~style:Styles.button ~on_click:(fun () -> Some Msg.Reset) [
+          text ~style:Styles.text "Reset"
+        ]
+      ]
+    ]
+
+let subscriptions _model = Sub.on_quit Msg.Reset
+
+let run () =
+  let window = Window.make ~width:800 ~height:600 ~title:"Counter" () in
+  run ~window ~subscriptions ~init:(Model.init ()) ~update ~view ()
 
 let () =
-  match Ui.run ~window ~model ~update ~view () with
-  | Ok () -> ()
-  | Error (`Msg err) -> Printf.eprintf "Error: %s\n" err
+  match run () with
+  | Ok () ->
+      ()
+  | Error (`Msg msg) ->
+      Printf.eprintf "Error: %s\n" msg;
+      exit 1
 ```
 
 ## Animation
